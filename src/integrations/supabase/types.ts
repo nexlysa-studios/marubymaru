@@ -14,6 +14,41 @@ export type Database = {
   }
   public: {
     Tables: {
+      order_emails: {
+        Row: {
+          id: string
+          order_id: string
+          kind: string
+          status: string
+          recipient: string | null
+          provider_id: string | null
+          attempts: number
+          last_error: string | null
+          sent_at: string | null
+          delivery_status: string | null
+          delivery_updated_at: string | null
+          created_at: string
+          next_attempt_at: string
+          first_attempt_at: string | null
+          locked_until: string | null
+          lock_token: string | null
+          snapshot: Json
+          payload: Json | null
+        }
+        Insert: {
+          order_id: string
+          kind: string
+          snapshot: Json
+        }
+        Update: { status?: string }
+        Relationships: [{
+          foreignKeyName: "order_emails_order_id_fkey"
+          columns: ["order_id"]
+          isOneToOne: false
+          referencedRelation: "orders"
+          referencedColumns: ["id"]
+        }]
+      }
       categories: {
         Row: {
           created_at: string

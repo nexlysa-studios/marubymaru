@@ -5,3 +5,11 @@ verify_jwt = false
 
 [functions.payfast-itn]
 verify_jwt = false
+
+[functions.order-emails]
+# Authenticated by a dedicated scheduler secret inside the function.
+verify_jwt = false
+
+[functions.resend-webhook]
+# Authenticated by the Resend/Svix signature, never by a browser session.
+verify_jwt = false

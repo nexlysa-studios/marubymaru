@@ -5,6 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { adminOrdersQueryKey, useAdminOrder } from "@/hooks/useAdminOrders";
 import { supabase } from "@/integrations/supabase/client";
+import OrderEmailStatus from "@/components/admin/OrderEmailStatus";
 
 const orderStatuses = ["new", "confirmed", "processing", "shipped", "completed", "cancelled"] as const;
 
@@ -140,6 +141,7 @@ const AdminOrderDetail = () => {
         </div>
 
         <aside className="space-y-8">
+          <OrderEmailStatus orderId={order.id} paid={order.payment_status === "paid"} />
           <section className="border border-black/10 bg-white p-6">
             <h2 className="font-serif text-3xl">Payment</h2>
             <p className="mt-5 text-xs uppercase tracking-[0.16em]">{order.payment_status || "pending"}</p>

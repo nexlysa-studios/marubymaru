@@ -2,12 +2,11 @@ import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, ArrowUpRight, Instagram, Mail, MessageCircle, Music2 } from "lucide-react";
 
-// Replace these display-only placeholders with approved business details.
 const socials = [
-  { name: "WhatsApp", detail: "+27 XX XXX XXXX", description: "A little guidance, a conversation away.", icon: MessageCircle },
-  { name: "Instagram", detail: "@marubymaru", description: "The collection, the details, the everyday.", icon: Instagram },
-  { name: "TikTok", detail: "@marubymaru", description: "A glimpse into the world of Maru.", icon: Music2 },
-  { name: "Email", detail: "hello@marubymaru.example", description: "For questions, ideas and everything between.", icon: Mail },
+  { name: "WhatsApp", detail: "076 911 2141", description: "A little guidance, a conversation away.", icon: MessageCircle, href: "tel:+27769112141" },
+  { name: "Instagram", detail: "@marubymaruu", description: "The collection, the details, the everyday.", icon: Instagram, href: "https://www.instagram.com/marubymaruu" },
+  { name: "TikTok", detail: "@marubymaruu", description: "A glimpse into the world of Maru.", icon: Music2, href: "https://www.tiktok.com/@marubymaruu" },
+  { name: "Email", detail: "marubymaru@icloud.com", description: "For questions, ideas and everything between.", icon: Mail, href: "mailto:marubymaru@icloud.com" },
 ];
 const fieldClass = "mt-3 min-h-12 w-full min-w-0 rounded-none border border-black/20 bg-white px-4 py-3 text-base normal-case tracking-normal text-black outline-none transition-colors placeholder:text-black/35 focus:border-black focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-black sm:text-sm";
 const labelClass = "block text-[10px] uppercase tracking-[0.16em]";
@@ -16,12 +15,12 @@ const quickAnswers = [
   {
     title: "Shipping & Delivery",
     to: "/shipping",
-    text: "Complimentary shipping on all orders, delivered within 5–7 business days.",
+    text: "Delivery takes 5–10 business days on all orders.",
   },
   {
-    title: "Returns & Exchanges",
+    title: "Returns & Refunds",
     to: "/returns",
-    text: "Fourteen days to return unworn pieces with their tags attached.",
+    text: "Returns and refunds are not accepted.",
   },
   {
     title: "Size Guide",
@@ -93,14 +92,14 @@ export default function Contact() {
         <aside aria-labelledby="contact-socials-heading" className="min-w-0 bg-black px-6 py-8 text-white sm:p-9 lg:col-start-1 lg:row-start-1 lg:p-10">
           <p className="mb-5 text-[9px] uppercase tracking-[0.25em] text-white/60">The conversation continues</p>
           <h2 id="contact-socials-heading" className="font-serif text-4xl leading-tight">A little closer<br /><span className="italic">to Maru.</span></h2>
-          <p className="mb-8 mt-5 max-w-sm text-xs leading-6 text-white/65">Find us in the everyday. Our social and contact details will be shared here soon.</p>
+          <p className="mb-8 mt-5 max-w-sm text-xs leading-6 text-white/65">Find us in the everyday, and get in touch whenever you’d like to connect.</p>
           <ul className="divide-y divide-white/20 border-y border-white/20">
-            {socials.map(({ name, detail, description, icon: Icon }) => (
+            {socials.map(({ name, detail, description, icon: Icon, href }) => (
               <li key={name} className="flex gap-4 py-6">
                 <Icon aria-hidden="true" size={20} strokeWidth={1.1} className="mt-1 shrink-0 text-white/80" />
                 <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center justify-between gap-2"><h3 className="font-serif text-2xl">{name}</h3><span className="text-[8px] uppercase tracking-[0.12em] text-white/55">Placeholder</span></div>
-                  <p className="mt-2 break-words text-xs tracking-wide text-white/85">{detail}</p>
+                  <div className="flex flex-wrap items-center justify-between gap-2"><h3 className="font-serif text-2xl">{name}</h3><span className="text-[8px] uppercase tracking-[0.12em] text-white/55">Contact</span></div>
+                  <a href={href} target="_blank" rel="noreferrer" className="mt-2 block break-words text-xs tracking-wide text-white/85 transition-opacity hover:opacity-80">{detail}</a>
                   <p className="mt-2 text-[11px] leading-6 text-white/60">{description}</p>
                 </div>
               </li>

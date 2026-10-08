@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 const groups = [
   { title: "Explore", links: [["Shop", "/shop"], ["About", "/about"], ["Contact", "/contact"], ["Cart", "/cart"]] },
-  { title: "Customer care", links: [["Shipping & Delivery", "/shipping"], ["Returns & Exchanges", "/returns"], ["Size Guide", "/size-guide"], ["FAQ", "/faq"]] },
+  { title: "Customer care", links: [["Shipping & Delivery", "/shipping"], ["Returns & Refunds", "/returns"], ["Size Guide", "/size-guide"], ["FAQ", "/faq"]] },
   { title: "Info", links: [["Privacy Policy", "/privacy"], ["Terms & Conditions", "/terms"]] },
 ];
 

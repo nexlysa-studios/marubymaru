@@ -9,7 +9,8 @@ import ProductGrid from "@/components/storefront/ProductGrid";
 import NewsletterSection from "@/components/storefront/NewsletterSection";
 import SocialGallery from "@/components/storefront/SocialGallery";
 import { Skeleton } from "@/components/ui/skeleton";
-import brandImage from "@/assets/about.png";
+
+const brandImage = "/About.jpeg";
 
 // Existing editorial testimonials, retained without unconfirmed verification claims.
 const reviews = [
@@ -174,7 +175,7 @@ export default function Index() {
             loading="lazy"
             className="h-[480px] w-full object-cover object-center md:h-[600px]"
           />
-          <div className="absolute inset-0 bg-black/30" />
+          <div className="absolute inset-0" />
           <div className="absolute inset-0 flex flex-col items-center justify-between p-7 text-center text-white sm:p-12 md:items-stretch md:text-left lg:flex-row lg:items-end lg:p-16">
             <p className="font-serif text-[clamp(3.5rem,8vw,7.5rem)] font-light italic leading-[0.83] tracking-tight">
               MARU
@@ -184,7 +185,7 @@ export default function Index() {
               MARU
             </p>
             <div className="max-w-xs lg:pb-2">
-              <h2 className="font-serif text-2xl leading-snug sm:text-3xl">
+              <h2 className="hidden font-serif text-2xl leading-snug sm:block sm:text-3xl">
                 Designed for the woman who dresses with intention.
               </h2>
               <Link
@@ -222,18 +223,18 @@ export default function Index() {
             width={800}
             height={1000}
             loading="lazy"
-            className="aspect-[4/5] w-full object-cover grayscale"
+            className="aspect-[4/5] w-full object-cover"
           />
           <div className="max-w-md py-2 md:py-10">
             <p className="mb-5 text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
               Maru by Maru
             </p>
             <h2 className="font-serif text-4xl leading-tight lg:text-5xl">
-              Refined silhouettes for modern women.
+              Welcome to Maru
             </h2>
             <p className="mt-6 text-sm leading-7 text-muted-foreground">
-              Created with an appreciation for timeless design, effortless
-              femininity and pieces that feel as beautiful as they look.
+              We believe in beautiful, quality pieces that feel effortless,
+              timeless and easy to make your own.
             </p>
             <Link to="/about" className={`${textLink} mt-6`}>
               Our story →
@@ -268,9 +269,14 @@ export default function Index() {
         />
         <SocialGallery products={products} loading={isLoading} error={isError} />
         {/* Activate only after the business supplies its verified profile URL. */}
-        <p className="mt-8 text-center text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-          Follow @marubymaru →
-        </p>
+        <a
+          href="https://www.instagram.com/marubymaruu"
+          target="_blank"
+          rel="noreferrer"
+          className="mt-8 block text-center text-[10px] uppercase tracking-[0.2em] text-muted-foreground transition-opacity hover:opacity-70"
+        >
+          Follow @marubymaruu →
+        </a>
       </section>
 
       <section

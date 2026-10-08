@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import type { Category } from "@/hooks/useCategories";
-import brandImage from "@/assets/about.png";
 import { cn } from "@/lib/utils";
+
+const brandImage = "/About.jpeg";
 
 export default function CategoryCard({ category, image, className }: { category: Category; image?: string; className?: string }) {
   return (

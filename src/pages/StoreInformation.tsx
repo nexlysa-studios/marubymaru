@@ -7,16 +7,16 @@ const pages = {
     title: "Shipping & Delivery",
     intro: "From the Maru collection to your wardrobe.",
     sections: [
-      ["Delivery", "Complimentary shipping on all orders. Delivery within 5–7 business days."],
+      ["Delivery", "Delivery takes 5–10 business days on all orders."],
       ["Your address", "Please provide a complete delivery address and contact number at checkout. Delivery arrangements will be confirmed with you after your order is placed."],
     ],
   },
   returns: {
-    title: "Returns & Exchanges",
+    title: "Returns & Refunds",
     intro: "Taking care of your purchase.",
     sections: [
-      ["Returns", "We accept returns within 14 days of delivery. Items must be unworn with tags attached."],
-      ["Arranging a return", "Keep your order reference and original packaging. Return instructions and exchange arrangements will be confirmed by the team; a detailed process will be published here soon."],
+      ["Returns & Refunds", "We do not accept change-of-mind returns or exchanges unless otherwise stated. If you receive an incorrect, damaged or defective item, please contact us as soon as possible so that we can assist you in accordance with applicable South African consumer law."],
+      ["Your rights", "Nothing in these terms limits your rights under applicable consumer legislation."],
     ],
   },
   "size-guide": {
@@ -47,10 +47,17 @@ const pages = {
   },
   terms: {
     title: "Terms & Conditions",
-    intro: "Shopping with Maru by Maru.",
+    intro: "By placing an order with Maru by Maru, you agree to the following terms and conditions.",
     sections: [
-      ["Placing an order", "Prices are displayed in South African rand. The current checkout records your order and provides an order reference. Payment and delivery arrangements are confirmed afterwards."],
-      ["Full terms", "Our complete trading terms are being prepared and will be published here once confirmed."],
+      ["Orders", "All orders are subject to availability. Once payment has been received, your order will be processed. Please ensure that your contact and delivery details, size and colour selection are correct before placing your order."],
+      ["Payment", "All prices are displayed in South African Rand (ZAR). Orders are only confirmed once payment has been successfully received."],
+      ["Delivery & Collection", "We deliver across South Africa. Delivery times may vary depending on the courier and destination. Maru by Maru is not responsible for delays caused by third-party courier services. Collection is available where stated and collection details will be provided once your order is ready."],
+      ["Returns & Refunds", "We do not accept change-of-mind returns or exchanges unless otherwise stated. If you receive an incorrect, damaged or defective item, please contact us as soon as possible so that we can assist you in accordance with applicable South African consumer law. Nothing in these terms limits your rights under applicable consumer legislation."],
+      ["Sale Items", "Sale and promotional items may be subject to specific terms. All statutory consumer rights still apply."],
+      ["Product Images", "We do our best to display our products accurately. Colours may vary slightly due to lighting and individual screen settings."],
+      ["Website & Content", "All images, designs, logos, product names and content on the Maru by Maru website belong to Maru by Maru and may not be used or reproduced without permission."],
+      ["Changes", "Maru by Maru reserves the right to update these Terms & Conditions at any time. Updated terms will be published on this page."],
+      ["Contact", "For any questions regarding your order, please contact us on 076 911 2141, email marubymaru@icloud.com, or connect with us on Instagram @marubymaruu and TikTok @marubymaruu. Maru by Maru | South Africa | marubymaru.co.za"],
     ],
   },
 };

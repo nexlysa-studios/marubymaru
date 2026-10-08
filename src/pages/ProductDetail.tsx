@@ -126,9 +126,9 @@ const ProductDetail = () => {
                 {openSection === section && (
                   <div className="pb-4 text-xs leading-relaxed text-muted-foreground animate-fade-in">
                     {section === "Shipping" &&
-                      "Complimentary shipping on all orders. Delivery within 5–7 business days."}
+                      "Delivery takes 5–10 business days on all orders."}
                     {section === "Returns" &&
-                      "We accept returns within 14 days of delivery. Items must be unworn with tags attached."}
+                      "Returns and refunds are not accepted."}
                     {section === "Size Guide" &&
                       "XS: 0–2 / S: 4–6 / M: 8–10 / L: 12–14 / XL: 16"}
                   </div>

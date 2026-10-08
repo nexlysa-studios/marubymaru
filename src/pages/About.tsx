@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import aboutImage from "@/assets/about.png";
 import heroImage from "@/assets/hero.png";
+
+const aboutImage = "/About.jpeg";
 
 const textLink = "inline-flex min-h-11 items-center border-b border-black/50 py-3 text-[10px] uppercase tracking-[0.2em] transition-opacity hover:opacity-60";
 const principles = [
@@ -20,16 +21,17 @@ export default function About() {
 
       <section className="mx-auto grid max-w-[1440px] items-center gap-9 px-5 pb-14 sm:px-8 md:grid-cols-2 md:gap-12 md:pb-20 lg:gap-24 lg:px-12" aria-labelledby="our-story">
         <figure>
-          <img src={aboutImage} alt="Maru by Maru — an appreciation for craft and simplicity" width={800} height={1000} className="aspect-[4/5] w-full object-cover grayscale" />
+          <img src={aboutImage} alt="Maru by Maru — an appreciation for craft and simplicity" width={800} height={1000} className="aspect-[4/5] w-full object-cover" />
           <figcaption className="mt-4 flex justify-between gap-4 text-[8px] uppercase tracking-[0.2em] text-muted-foreground"><span>Maru by Maru</span><span>Made with intention</span></figcaption>
         </figure>
         <div className="max-w-md py-3 md:py-10">
           <p className="mb-5 text-[9px] uppercase tracking-[0.25em] text-muted-foreground">Our story</p>
-          <h2 id="our-story" className="font-serif text-4xl leading-tight lg:text-5xl">Refined silhouettes.<br /><span className="italic">Modern women.</span></h2>
-          <p className="mt-7 font-serif text-2xl leading-relaxed">Maru by Maru began with a single belief: true elegance lives in restraint.</p>
+          <h2 id="our-story" className="font-serif text-4xl leading-tight lg:text-5xl">About Maru by Maru</h2>
+          <p className="mt-7 font-serif text-2xl leading-relaxed">Founded in 2024, Maru by Maru is a Cape Town-based clothing brand inspired by effortless, timeless and modest style.</p>
           <div className="mt-5 space-y-5 text-sm leading-7 text-muted-foreground">
-            <p>Every piece begins with a silhouette — refined, considered and free from excess. An appreciation for timeless design, effortless femininity and pieces that feel as beautiful as they look.</p>
-            <p>Our collections are for women who understand that presence needs no embellishment. Each garment is a quiet expression of individuality, leaving space for the woman within.</p>
+            <p>We’re all about pieces that make you feel confident, feminine and effortlessly put together whether you’re dressing up or keeping it simple.</p>
+            <p>What started as a small dream in 2024 has grown into a beautiful community of Maru girls, and we’re so grateful for every bit of love and support along the way.</p>
+            <p>Welcome to Maru — your new favourite wardrobe, one piece at a time. ♡</p>
           </div>
           <Link to="/shop" className={textLink + " mt-6"}>Explore the collection →</Link>
         </div>

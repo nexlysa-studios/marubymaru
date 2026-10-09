@@ -1,9 +1,13 @@
 import { useCart } from "@/context/CartContext";
 import { Link } from "react-router-dom";
 import { Minus, Plus, X } from "lucide-react";
+import { useShippingPolicy } from "@/hooks/useShippingPolicy";
+import { formatCurrency, shippingAmount, shippingDescription } from "@/lib/shipping";
 
 const Cart = () => {
   const { items, removeItem, updateQuantity, totalPrice } = useCart();
+  const { data: shippingPolicy, isError: shippingError } = useShippingPolicy();
+  const shipping = shippingPolicy ? shippingAmount(totalPrice, 0, shippingPolicy) : null;
 
   if (items.length === 0) {
     return (
@@ -100,10 +104,15 @@ const Cart = () => {
           </div>
         ))}
 
-        {/* Total */}
-        <div className="flex justify-between items-center pt-8">
-          <span className="text-xs tracking-[0.2em] uppercase">Total</span>
-          <span className="font-serif text-2xl">R{totalPrice}</span>
+        <div className="space-y-4 pt-8">
+          <div className="flex justify-between text-xs"><span className="uppercase tracking-[0.2em]">Subtotal</span><span>{formatCurrency(totalPrice)}</span></div>
+          <div className="flex justify-between gap-4 text-xs"><span className="uppercase tracking-[0.2em]">Shipping</span><span>{shipping === null ? shippingError ? "Confirmed at checkout" : "Calculating…" : shipping === 0 ? "Free" : formatCurrency(shipping)}</span></div>
+          {shippingPolicy && <p className="text-xs leading-relaxed text-muted-foreground">{shippingDescription(shippingPolicy)}</p>}
+          <div className="flex items-center justify-between border-t border-foreground/10 pt-4">
+            <span className="text-xs tracking-[0.2em] uppercase">Estimated total</span>
+            <span className="font-serif text-2xl">{shipping === null ? "—" : formatCurrency(totalPrice + shipping)}</span>
+          </div>
+          <p className="text-[10px] leading-relaxed text-muted-foreground">Discounts and final pricing are confirmed at checkout.</p>
         </div>
 
         {/* Checkout */}

@@ -4,10 +4,13 @@ import { useCart } from "@/context/CartContext";
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { ProductDetailSkeleton } from "@/components/storefront/ProductSkeletons";
+import { useShippingPolicy } from "@/hooks/useShippingPolicy";
+import { shippingDescription } from "@/lib/shipping";
 
 const ProductDetail = () => {
   const { id } = useParams();
   const { data: products = [], isLoading } = useProducts();
+  const { data: shippingPolicy } = useShippingPolicy();
   const product = products.find((p) => p.id === id);
   const { addItem } = useCart();
   const [selectedSize, setSelectedSize] = useState("");
@@ -126,7 +129,7 @@ const ProductDetail = () => {
                 {openSection === section && (
                   <div className="pb-4 text-xs leading-relaxed text-muted-foreground animate-fade-in">
                     {section === "Shipping" &&
-                      "Delivery takes 5–10 business days on all orders."}
+                      <><p>Delivery takes 5–10 business days on all orders.</p><p className="mt-2">{shippingPolicy ? shippingDescription(shippingPolicy) : "Shipping rates are confirmed at checkout."}</p></>}
                     {section === "Returns" &&
                       "Returns and refunds are not accepted."}
                     {section === "Size Guide" &&

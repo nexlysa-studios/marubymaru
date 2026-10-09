@@ -1,8 +1,10 @@
-import { useState, type FormEvent } from "react";
+import { useLayoutEffect, useRef, useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { Check, Loader2 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { supabase } from "@/integrations/supabase/client";
+import { useShippingPolicy } from "@/hooks/useShippingPolicy";
+import { formatCurrency, shippingAmount, shippingDescription } from "@/lib/shipping";
 
 interface CustomerDetails {
   firstName: string;
@@ -47,14 +49,9 @@ const initialCustomer: CustomerDetails = {
 const inputClass =
   "w-full border-0 border-b border-black/30 bg-transparent px-0 py-3 text-sm outline-none transition-colors placeholder:text-black/25 focus:border-black";
 
-const formatCurrency = (amount: number) =>
-  new Intl.NumberFormat("en-ZA", {
-    style: "currency",
-    currency: "ZAR",
-  }).format(amount);
-
 const Checkout = () => {
   const { items, totalPrice, clearCart } = useCart();
+  const { data: shippingPolicy, isError: shippingError, refetch: refreshShipping } = useShippingPolicy();
   const [customer, setCustomer] = useState(initialCustomer);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -63,6 +60,14 @@ const Checkout = () => {
   const [coupon, setCoupon] = useState<AppliedCoupon | null>(null);
   const [couponError, setCouponError] = useState("");
   const [isApplying, setIsApplying] = useState(false);
+  const redirectHeading = useRef<HTMLHeadingElement>(null);
+
+  useLayoutEffect(() => {
+    if (!isSubmitting) return;
+    // Runs after the short redirect screen replaces the long checkout form.
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    redirectHeading.current?.focus({ preventScroll: true });
+  }, [isSubmitting]);
 
   const cartItemsPayload = () =>
     items.map((item) => ({ product_id: item.product.id, size: item.size, quantity: item.quantity }));
@@ -99,6 +104,7 @@ const Checkout = () => {
   };
 
   const discount = coupon ? Math.min(coupon.discount, totalPrice) : 0;
+  const shipping = shippingPolicy ? shippingAmount(totalPrice, discount, shippingPolicy) : null;
 
   const hasValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customer.email.trim());
 
@@ -108,7 +114,7 @@ const Checkout = () => {
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    if (!items.length || isSubmitting) return;
+    if (!items.length || isSubmitting || !shippingPolicy) return;
 
     setError("");
     setIsSubmitting(true);
@@ -172,7 +178,7 @@ const Checkout = () => {
         <div role="status" aria-live="polite" className="w-full">
           <Loader2 size={28} strokeWidth={1} aria-hidden="true" className="mx-auto animate-spin text-black/60 motion-reduce:animate-none" />
           <p className="mt-8 text-[10px] uppercase tracking-[0.28em] text-black/45">Secure checkout</p>
-          <h1 className="mt-3 font-serif text-3xl leading-tight sm:text-5xl">Redirecting you to PayFast...</h1>
+          <h1 ref={redirectHeading} tabIndex={-1} className="mt-3 font-serif text-3xl leading-tight outline-none sm:text-5xl">Redirecting you to PayFast...</h1>
           <p className="mx-auto mt-6 max-w-sm text-sm leading-relaxed text-black/60">
             Please keep this page open while we take you to PayFast to complete your payment.
           </p>
@@ -336,24 +342,30 @@ const Checkout = () => {
               {couponError && <p role="alert" className="mt-3 text-xs leading-relaxed">{couponError}</p>}
             </div>
             <div className="space-y-3 py-6">
+              <div className="flex justify-between text-xs"><span className="uppercase tracking-[0.2em]">Subtotal</span><span>{formatCurrency(totalPrice)}</span></div>
               {coupon && (
                 <>
-                  <div className="flex justify-between text-xs"><span className="uppercase tracking-[0.2em]">Subtotal</span><span>{formatCurrency(totalPrice)}</span></div>
                   <div className="flex justify-between text-xs"><span className="uppercase tracking-[0.2em]">Discount</span><span>−{formatCurrency(discount)}</span></div>
                 </>
               )}
+              <div className="flex justify-between gap-4 text-xs"><span className="uppercase tracking-[0.2em]">Shipping</span><span>{shipping === null ? "Calculating…" : shipping === 0 ? "Free" : formatCurrency(shipping)}</span></div>
+              {shippingPolicy && <p className="text-[10px] leading-relaxed text-black/45">{shippingDescription(shippingPolicy)}</p>}
               <div className="flex items-center justify-between">
                 <span className="text-xs uppercase tracking-[0.2em]">Total</span>
-                <span className="font-serif text-2xl">{formatCurrency(totalPrice - discount)}</span>
+                <span className="font-serif text-2xl">{shipping === null ? "—" : formatCurrency(totalPrice - discount + shipping)}</span>
               </div>
             </div>
+            {shippingError && <div role="alert" className="mb-5 text-xs leading-relaxed">
+              Shipping rates couldn't be loaded. Please try again before paying.
+              <button type="button" onClick={() => void refreshShipping()} className="ml-2 inline-flex min-h-11 items-center underline underline-offset-4">Retry shipping rates</button>
+            </div>}
             <p className="mb-5 text-[10px] leading-relaxed text-black/45">
               Final pricing is verified when the order is submitted. You'll be taken to PayFast to complete payment securely.
             </p>
             {error && <div role="alert" className="mb-5 border border-black p-4 text-xs leading-relaxed">{error}</div>}
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || !shippingPolicy}
               className="flex w-full items-center justify-center gap-3 bg-black px-6 py-4 text-xs uppercase tracking-[0.23em] text-white transition-opacity hover:opacity-75 disabled:cursor-not-allowed disabled:opacity-40"
             >
               {isSubmitting && <Loader2 size={15} className="animate-spin" />}

@@ -15,12 +15,13 @@ import { useAdminProducts } from "@/hooks/useAdminProducts";
 import { useAdminOrders } from "@/hooks/useAdminOrders";
 import { useCategories } from "@/hooks/useCategories";
 import { useAdminAuth } from "@/context/AdminAuthContext";
+import PaymentStatusBadge from "@/components/admin/PaymentStatusBadge";
+import { paymentSummary } from "@/lib/adminPayments";
 
 const formatCurrency = (amount: number) =>
   new Intl.NumberFormat("en-ZA", {
     style: "currency",
     currency: "ZAR",
-    maximumFractionDigits: 0,
   }).format(amount);
 
 const formatDate = (value: string) =>
@@ -58,9 +59,7 @@ const AdminOverview = () => {
   const openOrders = orders.filter(
     (order) => !["completed", "cancelled"].includes(order.status),
   );
-  const orderValue = orders
-    .filter((order) => order.status !== "cancelled")
-    .reduce((total, order) => total + order.total, 0);
+  const payments = paymentSummary(orders);
   const categoryCoverage = products.length
     ? Math.round(((products.length - unassignedProducts.length) / products.length) * 100)
     : 0;
@@ -80,9 +79,9 @@ const AdminOverview = () => {
 
   const summary = [
     {
-      label: "Order value",
-      value: formatCurrency(orderValue),
-      note: `${orders.filter((order) => order.status !== "cancelled").length} non-cancelled orders`,
+      label: "Payments received",
+      value: formatCurrency(payments.paidTotal),
+      note: `${payments.counts.paid} PayFast-confirmed ${payments.counts.paid === 1 ? "order" : "orders"} · includes shipping`,
       icon: ShoppingBag,
     },
     {
@@ -151,6 +150,18 @@ const AdminOverview = () => {
             ))}
           </section>
 
+          <section aria-label="Payment snapshot" className="mt-6 border border-black/10 bg-white p-5 sm:p-7">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <h2 className="font-serif text-2xl">Payment snapshot</h2>
+              <p className="text-[10px] leading-5 text-black/45">Order totals, not net payouts or refunds.</p>
+            </div>
+            <div className="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
+              {(["paid", "pending", "failed", "cancelled"] as const).map(state => <Link key={state} to={`/admin/orders?payment=${state}`} className="flex min-h-11 flex-wrap items-center justify-between gap-2 border-b border-black/10 py-3 transition-opacity hover:opacity-65">
+                <PaymentStatusBadge status={state} /><span className="font-serif text-2xl">{payments.counts[state]}</span>
+              </Link>)}
+            </div>
+          </section>
+
           <section className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1.45fr)_minmax(300px,0.75fr)]">
             <div className="border border-black/10 bg-white">
               <div className="flex items-center justify-between gap-5 border-b border-black/10 p-5 sm:p-7">
@@ -189,6 +200,7 @@ const AdminOverview = () => {
                         <span className="mt-2 inline-block border border-black/20 px-2 py-1 text-[8px] uppercase tracking-[0.14em]">
                           {statusLabel(order.status)}
                         </span>
+                        <div className="mt-2"><PaymentStatusBadge status={order.payment_status} /></div>
                       </div>
                     </Link>
                   ))}
@@ -305,4 +317,3 @@ const AdminOverview = () => {
 };
 
 export default AdminOverview;
-

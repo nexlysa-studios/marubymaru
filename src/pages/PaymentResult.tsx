@@ -56,7 +56,7 @@ const PaymentResult = ({ outcome }: { outcome: "success" | "cancelled" }) => {
         checks += 1;
         // Both return URLs are only navigation hints. Only the DB status, set by
         // the verified ITN, is evidence of payment, including on a cancelled URL.
-        if (data.payment_status === "pending" && checks < 40) {
+        if (data.payment_status === "pending" && outcome !== "cancelled" && checks < 40) {
           timer = window.setTimeout(() => void check(), 3000);
         } else {
           setChecking(false);
@@ -78,11 +78,15 @@ const PaymentResult = ({ outcome }: { outcome: "success" | "cancelled" }) => {
   const paid = order?.payment_status === "paid";
   const failed = order?.payment_status === "failed";
   const cancelled = order?.payment_status === "cancelled";
+  // A cancel return is a navigation outcome, not permission to mutate the order.
+  // A verified paid DB response always takes precedence, even on this URL.
+  const returnedCancelled = outcome === "cancelled" && !paid && !failed && !cancelled;
   const label = paid ? "Payment received" : failed ? "Payment unsuccessful" :
-    cancelled ? "Payment cancelled" : error ? "Status unavailable" :
+    cancelled || returnedCancelled ? "Payment cancelled" : error ? "Status unavailable" :
     checking ? "Confirming payment" : "Awaiting confirmation";
   const heading = paid ? "Thank you for your order." :
     failed || cancelled ? "Your payment was not completed." :
+    returnedCancelled ? "Your payment was cancelled." :
     error ? "Let’s check your payment." :
     checking ? "We’re checking your payment." : "Payment confirmation pending.";
 
@@ -91,7 +95,7 @@ const PaymentResult = ({ outcome }: { outcome: "success" | "cancelled" }) => {
       <div className="w-full animate-fade-in">
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-black text-white" aria-hidden="true">
           {paid ? <Check size={24} /> : checking ? <Loader2 size={22} className="motion-safe:animate-spin" /> :
-            error || failed || cancelled ? <CircleAlert size={24} /> : <Clock3 size={24} />}
+            error || failed || cancelled || returnedCancelled ? <CircleAlert size={24} /> : <Clock3 size={24} />}
         </div>
         <div role="status" aria-live="polite">
           <p className="mt-8 text-[10px] uppercase tracking-[0.3em] text-black/45">{label}</p>
@@ -101,11 +105,12 @@ const PaymentResult = ({ outcome }: { outcome: "success" | "cancelled" }) => {
           Your order number is <strong className="font-medium text-black">{order.order_number}</strong>.
           {paid ? " Your payment is confirmed." :
             failed || cancelled ? " PayFast has reported that this payment was not completed." :
+            returnedCancelled ? " You returned from PayFast after cancelling. We have not received payment confirmation for this order." :
             checking ? " We're waiting for PayFast's secure payment notification." :
             " We have not received payment confirmation yet."}
         </p>}
         {!paid && !error && !order && <p className="mt-7 text-sm leading-7 text-black/60">
-          {outcome === "cancelled" ? "You returned from the payment screen. We’re checking the order before confirming its status." : "Please wait while we check the payment status of your order."}
+          {outcome === "cancelled" ? "You returned from PayFast after cancelling. We’re checking the order’s payment status." : "Please wait while we check the payment status of your order."}
         </p>}
         {error && <p role="alert" className="mt-6 text-sm leading-7 text-black/60">{error}</p>}
         {order && <p className="mt-5 font-serif text-2xl">{formatCurrency(order.total)}</p>}

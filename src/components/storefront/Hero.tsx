@@ -9,7 +9,7 @@ export default function Hero() {
       </video>
       <div className="absolute inset-0 bg-black/20" />
       <div className="relative px-5 py-16 text-center text-white sm:px-8">
-        <h1 className="mx-auto max-w-5xl font-serif text-[clamp(2.5rem,5.5vw,5.5rem)] leading-[1.06] tracking-wide animate-fade-in">Shop Maru By Maru</h1>
+        <h1 className="mx-auto mb-3 max-w-5xl font-serif text-[clamp(2.5rem,5.5vw,5.5rem)] leading-[1.06] tracking-wide animate-fade-in">Shop Maru By Maru</h1>
         <div className="flex flex-col items-center gap-3 animate-fade-in-delay-2">
           <Link to="/shop" className="group relative isolate overflow-hidden border border-white bg-transparent px-7 py-4 text-[10px] uppercase tracking-[0.22em] text-white transition-colors duration-500 ease-out hover:text-black focus-visible:text-black">
             <span aria-hidden="true" className="absolute inset-0 -z-10 origin-left scale-x-0 bg-white transition-transform duration-500 ease-out group-hover:scale-x-100 group-focus-visible:scale-x-100" />

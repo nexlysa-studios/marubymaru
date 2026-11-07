@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom";
+import { useShippingPolicy } from "@/hooks/useShippingPolicy";
+import { shippingDescription } from "@/lib/shipping";
 
 // Reuses existing ProductDetail copy. Business owners should review these pages
 // before launch; never add unconfirmed payment, delivery or legal promises here.
@@ -8,6 +10,7 @@ const pages = {
     intro: "From the Maru collection to your wardrobe.",
     sections: [
       ["Delivery", "Delivery takes 5–10 business days on all orders."],
+      ["Shipping rates", ""],
       ["Your address", "Please provide a complete delivery address and contact number at checkout. Delivery arrangements will be confirmed with you after your order is placed."],
     ],
   },
@@ -33,7 +36,8 @@ const pages = {
     sections: [
       ["How do I place an order?", "Choose your pieces and sizes, add them to your cart, then select Place Your Order. Enter your contact and delivery details and submit. Your order reference will appear on the confirmation screen."],
       ["Do I need an account?", "You can place an order as a guest. No customer account is required."],
-      ["When do I pay?", "Payment and delivery arrangements will be confirmed with you after your order is placed. No payment is collected by the current checkout."],
+      ["When do I pay?", "Checkout takes you to PayFast to pay securely. Your order is confirmed after PayFast verifies successful payment."],
+      ["How much is shipping?", ""],
       ["Will my cart be saved?", "Your current cart lasts while you browse. Refreshing or closing the page clears it."],
     ],
   },
@@ -66,6 +70,7 @@ export type InformationPage = keyof typeof pages;
 
 export default function StoreInformation({ page }: { page: InformationPage }) {
   const content = pages[page];
+  const { data: shippingPolicy, isError: shippingError } = useShippingPolicy();
   return (
     <div className="mx-auto max-w-3xl px-5 py-16 sm:px-8 md:py-24">
       <p className="mb-4 text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Maru by Maru</p>
@@ -74,7 +79,7 @@ export default function StoreInformation({ page }: { page: InformationPage }) {
       <div className="mt-12 space-y-8 border-t border-black/10 pt-10">
         {content.sections.map(([title, text]) => <section key={title}>
           <h2 className="font-serif text-2xl">{title}</h2>
-          <p className="mt-3 text-sm leading-7 text-muted-foreground">{text}</p>
+          <p className="mt-3 text-sm leading-7 text-muted-foreground">{text || (shippingPolicy ? shippingDescription(shippingPolicy) : shippingError ? "Shipping rates are temporarily unavailable. Please check again at checkout." : "Loading shipping rates…")}</p>
         </section>)}
       </div>
       <div className="mt-12 flex flex-wrap gap-6 text-[10px] uppercase tracking-[0.2em]">

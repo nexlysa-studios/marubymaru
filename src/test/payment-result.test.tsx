@@ -46,6 +46,33 @@ describe("payment return confirmation", () => {
     expect(screen.queryByText(/No money was taken/)).not.toBeInTheDocument();
   });
 
+  it("shows a clear cancellation return for a pending order without marking it cancelled or paid", async () => {
+    invoke.mockResolvedValue(result("pending"));
+    await act(async () => { mount("cancelled"); });
+    expect(screen.getByText("Payment cancelled")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Your payment was cancelled." })).toBeInTheDocument();
+    expect(screen.getByText(/We have not received payment confirmation for this order/)).toBeInTheDocument();
+    expect(screen.queryByText(/No money was taken/)).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Continue shopping" })).toHaveAttribute("href", "/shop");
+    expect(screen.getByRole("button", { name: "Check payment again" })).toBeEnabled();
+    await act(async () => { await vi.advanceTimersByTimeAsync(120000); });
+    expect(invoke).toHaveBeenCalledTimes(1);
+    expect(invoke).toHaveBeenLastCalledWith("payfast-checkout", expect.objectContaining({ body: { action: "status", order_id: id } }));
+    invoke.mockResolvedValue(result("paid"));
+    await act(async () => { fireEvent.click(screen.getByRole("button", { name: "Check payment again" })); });
+    expect(screen.getByText("Payment received")).toBeInTheDocument();
+    expect(screen.queryByText("Payment cancelled")).not.toBeInTheDocument();
+  });
+
+  it("still explains a cancelled return when the status check is unavailable", async () => {
+    invoke.mockResolvedValue({ data: null, error: new Error("network") });
+    await act(async () => { mount("cancelled"); });
+    expect(screen.getByText("Payment cancelled")).toBeInTheDocument();
+    expect(screen.getByRole("alert")).toHaveTextContent("couldn't check your payment status");
+    expect(screen.getByRole("button", { name: "Check payment again" })).toBeEnabled();
+    expect(screen.queryByText("Payment received")).not.toBeInTheDocument();
+  });
+
   it.each(["failed", "cancelled"])("shows the actual %s state on the success URL", async (status) => {
     invoke.mockResolvedValue(result(status));
     await act(async () => { mount(); });

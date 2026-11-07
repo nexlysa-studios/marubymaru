@@ -14,6 +14,12 @@ export type Database = {
   }
   public: {
     Tables: {
+      shipping_settings: {
+        Row: { id: boolean; flat_rate: number; free_shipping_threshold: number }
+        Insert: { id?: boolean; flat_rate: number; free_shipping_threshold: number }
+        Update: { flat_rate?: number; free_shipping_threshold?: number }
+        Relationships: []
+      }
       order_emails: {
         Row: {
           id: string

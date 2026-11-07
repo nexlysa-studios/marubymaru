@@ -25,12 +25,14 @@ export const useAdminOrders = () =>
       }));
     },
     staleTime: 1000 * 30,
+    refetchInterval: 30_000,
   });
 
 export const useAdminOrder = (id: string | undefined) =>
   useQuery({
     queryKey: [...adminOrdersQueryKey, id],
     enabled: Boolean(id),
+    refetchInterval: 30_000,
     queryFn: async () => {
       if (!id) throw new Error("Order ID is required");
 
@@ -67,4 +69,3 @@ export const useAdminOrder = (id: string | undefined) =>
       };
     },
   });
-

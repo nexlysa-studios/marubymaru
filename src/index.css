@@ -160,6 +160,37 @@
   padding-right: var(--gallery-gap);
 }
 
+.shipping-banner {
+  height: 32px;
+  overflow: hidden;
+  background: #000;
+  color: #fff;
+}
+
+.shipping-banner-track,
+.shipping-banner-group {
+  display: flex;
+  width: max-content;
+}
+
+.shipping-banner-track {
+  height: 100%;
+  animation: shipping-banner-scroll 18s linear infinite;
+}
+
+.shipping-banner-group {
+  min-width: 100vw;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-around;
+  gap: 1rem;
+  padding: 0 2rem;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
 .maru-gallery-card {
   flex: 0 0 var(--gallery-card-width);
   width: var(--gallery-card-width);
@@ -176,6 +207,11 @@
 }
 
 @keyframes maru-gallery-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes shipping-banner-scroll {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
 }
@@ -204,6 +240,10 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+  .shipping-banner-track {
+    animation-duration: 18s !important;
+    animation-iteration-count: infinite !important;
   }
   .animate-fade-in, .animate-fade-in-delay, .animate-fade-in-delay-2 {
     opacity: 1;

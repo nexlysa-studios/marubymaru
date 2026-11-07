@@ -96,6 +96,20 @@ export default function Navbar() {
           </Sheet>
         </div>
       </nav>
+      <div className="shipping-banner" role="region" aria-label="Free shipping announcement">
+        <div className="shipping-banner-track">
+          <div className="shipping-banner-group">
+            <span>Free Shipping on orders over R1500</span>
+            <span aria-hidden="true">Free Shipping on orders over R1500</span>
+            <span aria-hidden="true">Free Shipping on orders over R1500</span>
+          </div>
+          <div className="shipping-banner-group" aria-hidden="true">
+            <span>Free Shipping on orders over R1500</span>
+            <span>Free Shipping on orders over R1500</span>
+            <span>Free Shipping on orders over R1500</span>
+          </div>
+        </div>
+      </div>
     </header>
   );
 }

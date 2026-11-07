@@ -1,13 +1,13 @@
 import { Link } from "react-router-dom";
-import heroImage from "@/assets/hero.png";
+import elanImage from "@/assets/elan-cropped-trench-jacket.jpeg";
 
 const aboutImage = "/About.jpeg";
 
 const textLink = "inline-flex min-h-11 items-center border-b border-black/50 py-3 text-[10px] uppercase tracking-[0.2em] transition-opacity hover:opacity-60";
 const principles = [
-  { number: "01", title: "A considered silhouette", text: "Clean lines, thoughtful proportions and room for your own expression. Pieces that complement the woman wearing them." },
-  { number: "02", title: "An effortless femininity", text: "Softness and strength, held in balance. A wardrobe that feels natural, personal and entirely your own." },
-  { number: "03", title: "A lasting point of view", text: "We are drawn to simplicity beyond the moment. To the pieces you reach for, return to and make part of your story." },
+  { number: "01", title: "Timeless", text: "Pieces that stay in your wardrobe season after season." },
+  { number: "02", title: "Effortless", text: "Easy to wear, easy to style, always put together." },
+  { number: "03", title: "Versatile", text: "From everyday looks to dressed-up moments, style it your way." },
 ];
 
 export default function About() {
@@ -15,8 +15,8 @@ export default function About() {
     <div>
       <section className="store-section !pb-10 !pt-12 md:!pb-16 md:!pt-20">
         <p className="mb-6 text-center text-[9px] uppercase tracking-[0.28em] text-muted-foreground">The world of Maru</p>
-        <h1 className="text-center font-serif text-[clamp(3rem,7vw,6.5rem)] leading-[1.05]">Simplicity is<br /><span className="italic">Strength.</span></h1>
-        <p className="mx-auto mt-6 max-w-sm text-center text-xs leading-6 text-muted-foreground">A quiet confidence. A considered wardrobe.<br />An expression that is unmistakably yours.</p>
+        <h1 className="text-center font-serif text-[clamp(3rem,7vw,6.5rem)] leading-[1.05]">From Us to You</h1>
+        <p className="mx-auto mt-6 max-w-sm text-center text-xs leading-6 text-muted-foreground">Thank you for making Maru part of your wardrobe.</p>
       </section>
 
       <section className="mx-auto grid max-w-[1440px] items-center gap-9 px-5 pb-14 sm:px-8 md:grid-cols-2 md:gap-12 md:pb-20 lg:gap-24 lg:px-12" aria-labelledby="our-story">
@@ -48,11 +48,11 @@ export default function About() {
         <div className="grid items-center gap-10 md:grid-cols-[1.1fr_0.9fr] md:gap-16 lg:gap-24">
           <div className="max-w-md md:py-8">
             <p className="mb-6 text-[9px] uppercase tracking-[0.25em] text-muted-foreground">The Maru woman</p>
-            <h2 className="font-serif text-4xl leading-tight lg:text-5xl">Made with intention.<br /><span className="italic">Worn with presence.</span></h2>
-            <p className="mt-6 text-sm leading-7 text-muted-foreground">For the everyday moments and the ones you remember. Discover a collection that invites you to dress with intention, and to make each piece your own.</p>
+            <h2 className="font-serif text-4xl leading-tight lg:text-5xl">Find your next favourite piece</h2>
+            <p className="mt-6 text-sm leading-7 text-muted-foreground">From everyday essentials to pieces for special moments, discover styles made to become part of your wardrobe.</p>
             <div className="mt-7 flex flex-wrap gap-x-8 gap-y-3"><Link to="/shop?collection=new" className={textLink}>Discover new arrivals →</Link><Link to="/contact" className={textLink}>Get in touch →</Link></div>
           </div>
-          <img src={heroImage} alt="Fashion from the world of Maru by Maru" width={800} height={1000} loading="lazy" className="aspect-[4/5] w-full object-cover" />
+          <img src={elanImage} alt="Two women wearing ELAN cropped trench jackets" width={800} height={1000} loading="lazy" className="aspect-[4/5] w-full object-cover" />
         </div>
       </section>
     </div>

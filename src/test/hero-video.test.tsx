@@ -1,4 +1,4 @@
-import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import Hero from "@/components/storefront/Hero";
@@ -38,10 +38,9 @@ describe("hero background video", () => {
     });
 
     expect(play).toHaveBeenCalledTimes(1);
-    expect(screen.queryByRole("button", { name: "Play background video" })).not.toBeInTheDocument();
   });
 
-  it("offers a user-initiated retry when autoplay is blocked", async () => {
+  it("silently keeps the poster fallback if autoplay is blocked", async () => {
     const play = vi.spyOn(HTMLMediaElement.prototype, "play").mockRejectedValue(new DOMException("Autoplay blocked", "NotAllowedError"));
     const { container } = renderHero();
 
@@ -49,12 +48,8 @@ describe("hero background video", () => {
       fireEvent.canPlay(container.querySelector("video")!);
     });
 
-    const retryButton = screen.getByRole("button", { name: "Play background video" });
-    await act(async () => {
-      fireEvent.click(retryButton);
-    });
-
-    expect(play).toHaveBeenCalledTimes(2);
-    expect(retryButton).toBeInTheDocument();
+    expect(play).toHaveBeenCalledTimes(1);
+    expect(container.querySelector("video")).toHaveAttribute("poster");
+    expect(container.querySelector("button")).not.toBeInTheDocument();
   });
 });

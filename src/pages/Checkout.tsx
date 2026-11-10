@@ -5,6 +5,7 @@ import { useCart } from "@/context/CartContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useShippingPolicy } from "@/hooks/useShippingPolicy";
 import { formatCurrency, shippingAmount, shippingDescription } from "@/lib/shipping";
+import PaymentMethods from "@/components/PaymentMethods";
 
 interface CustomerDetails {
   firstName: string;
@@ -371,6 +372,9 @@ const Checkout = () => {
               {isSubmitting && <Loader2 size={15} className="animate-spin" />}
               {isSubmitting ? "Redirecting to PayFast" : "Pay securely with PayFast"}
             </button>
+            <div className="mt-6">
+              <PaymentMethods label="Available payment methods" />
+            </div>
           </div>
         </aside>
       </form>

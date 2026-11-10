@@ -1,13 +1,61 @@
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { Play } from "lucide-react";
 import heroImage from "@/assets/hero.png";
 
 export default function Hero() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [showPlayButton, setShowPlayButton] = useState(false);
+
+  const attemptPlayback = useCallback(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.muted = true;
+    void video.play().then(
+      () => setShowPlayButton(false),
+      () => setShowPlayButton(true),
+    );
+  }, []);
+
+  useEffect(() => {
+    const resumeWhenVisible = () => {
+      if (document.visibilityState === "visible") attemptPlayback();
+    };
+
+    document.addEventListener("visibilitychange", resumeWhenVisible);
+    return () => document.removeEventListener("visibilitychange", resumeWhenVisible);
+  }, [attemptPlayback]);
+
   return (
     <section className="relative flex min-h-[560px] h-[calc(100svh-4rem)] max-h-[1050px] items-center justify-center overflow-hidden bg-black">
-      <video autoPlay muted loop playsInline poster={heroImage} preload="metadata" className="absolute inset-0 h-full w-full object-cover" aria-hidden="true">
+      <video
+        ref={videoRef}
+        autoPlay
+        muted
+        loop
+        playsInline
+        poster={heroImage}
+        preload="auto"
+        onCanPlay={attemptPlayback}
+        onPlaying={() => setShowPlayButton(false)}
+        onError={() => setShowPlayButton(true)}
+        className="absolute inset-0 h-full w-full object-cover"
+        aria-hidden="true"
+      >
         <source src="/videos/hero.mp4" type="video/mp4" />
       </video>
       <div className="absolute inset-0 bg-black/20" />
+      {showPlayButton && (
+        <button
+          type="button"
+          onClick={attemptPlayback}
+          className="absolute bottom-5 right-5 z-10 inline-flex min-h-11 items-center gap-2 border border-white/70 bg-black/45 px-4 text-[10px] uppercase tracking-[0.16em] text-white backdrop-blur-sm transition-colors hover:bg-black/70"
+        >
+          <Play size={14} aria-hidden="true" />
+          Play background video
+        </button>
+      )}
       <div className="relative px-5 py-16 text-center text-white sm:px-8">
         <h1 className="mx-auto mb-3 max-w-5xl font-serif text-[clamp(2.5rem,5.5vw,5.5rem)] leading-[1.06] tracking-wide animate-fade-in">Shop Maru By Maru</h1>
         <div className="flex flex-col items-center gap-3 animate-fade-in-delay-2">

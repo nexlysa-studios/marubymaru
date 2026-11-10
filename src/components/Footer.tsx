@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import PaymentMethods from "./PaymentMethods";
 
 const groups = [
   { title: "Explore", links: [["Shop", "/shop"], ["About", "/about"], ["Contact", "/contact"], ["Cart", "/cart"]] },
@@ -24,7 +25,10 @@ export default function Footer() {
             </nav>)}
           </div>
         </div>
-        <p className="mt-12 border-t border-black/10 pt-6 text-[10px] leading-relaxed tracking-wide text-muted-foreground">© {new Date().getFullYear()} Maru by Maru. All rights reserved.</p>
+        <div className="mt-12 border-t border-black/10 pt-7">
+          <PaymentMethods />
+        </div>
+        <p className="mt-8 text-[10px] leading-relaxed tracking-wide text-muted-foreground">© {new Date().getFullYear()} Maru by Maru. All rights reserved.</p>
       </div>
     </footer>
   );

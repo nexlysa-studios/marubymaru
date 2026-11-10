@@ -27,6 +27,15 @@ beforeEach(() => {
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 
 describe("checkout payment handoff notice", () => {
+  it("shows the payment methods alongside the checkout button", () => {
+    render(page());
+    expect(screen.getByRole("region", { name: "Accepted payment methods" })).toBeInTheDocument();
+    expect(screen.getByText("Available payment methods")).toBeInTheDocument();
+    for (const brand of ["Visa", "Mastercard", "Apple Pay", "Google Pay", "PayFast"]) {
+      expect(screen.getByRole("img", { name: brand })).toBeInTheDocument();
+    }
+  });
+
   it("stays visible while preparing payment and after the cart clears for the gateway redirect", async () => {
     let finishOrder: (value: unknown) => void;
     let finishPayment: (value: unknown) => void;

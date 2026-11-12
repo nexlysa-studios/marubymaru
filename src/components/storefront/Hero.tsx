@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import heroImage from "@/assets/hero.png";
 
 export default function Hero() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -30,7 +29,7 @@ export default function Hero() {
         muted
         loop
         playsInline
-        poster={heroImage}
+        poster="/hero-fallback.jpeg"
         preload="auto"
         onCanPlay={attemptPlayback}
         className="absolute inset-0 h-full w-full object-cover"

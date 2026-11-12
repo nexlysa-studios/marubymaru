@@ -25,7 +25,7 @@ describe("hero background video", () => {
     expect(video).toHaveProperty("muted", true);
     expect(video).toHaveProperty("loop", true);
     expect(video).toHaveProperty("playsInline", true);
-    expect(video).toHaveAttribute("poster");
+    expect(video).toHaveAttribute("poster", "/hero-fallback.jpeg");
     expect(video?.querySelector("source")).toHaveAttribute("src", "/videos/hero.mp4");
   });
 

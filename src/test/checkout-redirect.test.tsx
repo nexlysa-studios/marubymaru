@@ -2,6 +2,7 @@ import { act, cleanup, fireEvent, render, screen } from "@testing-library/react"
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import Checkout from "@/pages/Checkout";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const mocks = vi.hoisted(() => ({ rpc: vi.fn(), invoke: vi.fn(), clearCart: vi.fn(), useCart: vi.fn(), useShippingPolicy: vi.fn() }));
 vi.mock("@/integrations/supabase/client", () => ({
@@ -15,7 +16,8 @@ const cart = () => ({
   totalPrice: 650,
   clearCart: mocks.clearCart,
 });
-const page = () => <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}><Checkout /></MemoryRouter>;
+const checkoutClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+const page = () => <QueryClientProvider client={checkoutClient}><MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}><Checkout /></MemoryRouter></QueryClientProvider>;
 const submitCheckout = () => fireEvent.submit(screen.getByRole("button", { name: "Pay securely with PayFast" }).closest("form")!);
 
 beforeEach(() => {
@@ -46,6 +48,7 @@ describe("checkout payment handoff notice", () => {
     const view = render(page());
     submitCheckout();
     expect(screen.getByRole("status")).toHaveTextContent("Redirecting you to PayFast...");
+    expect(mocks.rpc).toHaveBeenCalledWith("place_order", expect.objectContaining({ p_customer: expect.objectContaining({ expected_total: 749 }) }));
     expect(window.scrollTo).toHaveBeenCalledWith({ top: 0, left: 0, behavior: "instant" });
     expect(screen.getByRole("heading", { name: "Redirecting you to PayFast..." })).toHaveFocus();
     await act(async () => { finishOrder({ data: { id: "order-1", order_number: "MBM-TEST", total: 650 }, error: null }); });

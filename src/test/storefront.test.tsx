@@ -22,28 +22,38 @@ function mount(page: React.ReactNode, url = "/") {
 }
 
 describe("database-backed storefront selections", () => {
+  it("filters sale pieces and sorts by the selling price rather than the crossed-out price", () => {
+    catalog.products = [product("Sale dress", { price: 800, salePrice: 300 }), product("Regular dress", { price: 400 }), product("Other sale", { price: 1000, salePrice: 350 })];
+    mount(<Shop />, "/shop?collection=sale&max=340&sort=price-asc");
+    expect(screen.getByRole("heading", { name: "The Sale Edit" })).toBeInTheDocument();
+    expect(document.querySelectorAll(".product-card")).toHaveLength(1);
+    expect(screen.getByRole("link", { name: /Sale dress/ })).toBeInTheDocument();
+    expect(screen.getByText("62% off")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Remove Up to R340 filter" }));
+    expect(Array.from(document.querySelectorAll(".product-card h3")).map(el => el.textContent)).toEqual(["Sale dress", "Other sale"]);
+  });
   it("uses the category slug in the URL and the database category ID to match products", () => {
     catalog.products = [product("Dress"), product("Top", { categoryId: "top-id" })];
     mount(<Shop />, "/shop?category=tops");
-    expect(screen.getByRole("link", { name: /Top R500/ })).toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: /Dress R500/ })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Top R\s*500/ })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /Dress R\s*500/ })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Dresses" }));
-    expect(screen.getByRole("link", { name: /Dress R500/ })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Dress R\s*500/ })).toBeInTheDocument();
   });
 
   it("combines new-arrivals and category filters without showing the full catalogue", () => {
     catalog.products = [product("New top", { categoryId: "top-id", category: "new" }), product("Older top", { categoryId: "top-id" }), product("New dress", { category: "new" })];
     mount(<Shop />, "/shop?category=tops&collection=new");
-    expect(screen.getByRole("link", { name: /New top R500/ })).toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: /Older top R500/ })).not.toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: /New dress R500/ })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /New top R\s*500/ })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /Older top R\s*500/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /New dress R\s*500/ })).not.toBeInTheDocument();
   });
 
   it("does not silently fall back to all products for an unknown category", () => {
     catalog.products = [product("Dress")];
     mount(<Shop />, "/shop?category=missing");
     expect(screen.getByText(/This category is unavailable/)).toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: /Dress R500/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /Dress R\s*500/ })).not.toBeInTheDocument();
   });
 
   it("combines category, price, size and Most Loved filters and sorts matching pieces", () => {
@@ -71,7 +81,7 @@ describe("database-backed storefront selections", () => {
     fireEvent.click(screen.getByRole("button", { name: "Apply price" }));
     expect(screen.getByText(/No pieces match/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Clear filters" }));
-    expect(screen.getByRole("link", { name: /Dress R500/ })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Dress R\s*500/ })).toBeInTheDocument();
     expect(screen.getByLabelText("Maximum price")).toHaveValue(null);
   });
 

@@ -21,9 +21,13 @@ Deno.serve(async (req) => {
     const { action, order_id, origin } = parsed.data;
 
     const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    if (action === "start") {
+      const { error: expiryError } = await db.rpc("expire_unpaid_orders", { p_order_id: order_id });
+      if (expiryError) return json({ error: "Order status temporarily unavailable" }, 503);
+    }
     const { data: order, error: orderError } = await db
       .from("orders")
-      .select("id, order_number, total, payment_status, customer_first_name, customer_last_name, customer_email")
+      .select("id, order_number, total, status, payment_status, customer_first_name, customer_last_name, customer_email")
       .eq("id", order_id)
       .maybeSingle();
     if (orderError) return json({ error: "Order status temporarily unavailable" }, 503);
@@ -34,6 +38,7 @@ Deno.serve(async (req) => {
     }
 
     if (order.payment_status === "paid") return json({ error: "This order has already been paid." }, 400);
+    if (order.status === "cancelled" || order.payment_status === "cancelled") return json({ error: "This order has been cancelled. Please contact Maru before paying." }, 400);
     const cents = amountInCents(order.total);
     if (cents === null || cents <= 0) return json({ error: "This order does not have a payable amount." }, 400);
     const config = payfastConfig((name) => Deno.env.get(name));

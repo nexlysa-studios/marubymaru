@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { ChevronRight, Loader2, RefreshCw, Search } from "lucide-react";
 import { useAdminOrders } from "@/hooks/useAdminOrders";
 import PaymentStatusBadge from "@/components/admin/PaymentStatusBadge";
+import PaymentReminders from "@/components/admin/PaymentReminders";
 import { paymentStatus, paymentStatuses, paymentStatusDetails, paymentSummary } from "@/lib/adminPayments";
 
 const statuses = ["all", "new", "confirmed", "processing", "shipped", "completed", "cancelled"] as const;
@@ -65,6 +66,7 @@ const AdminOrders = () => {
           </div>
         ))}
       </div>
+      <PaymentReminders />
 
       {!isLoading && !error && <section aria-label="Payment overview" className="mt-6">
         <h2 className="font-serif text-2xl">Payment overview</h2>

@@ -32,7 +32,7 @@ export default function ShopFilters({ products, categories, params, onChange }: 
       </fieldset>
       <fieldset className="border-b border-black/10 pb-6">
         <legend className={legend}>The edit</legend>
-        {[{ value: "", label: "All pieces" }, { value: "new", label: "New arrivals" }, { value: "loved", label: "Most loved" }].map((item) => <label key={item.value} className="flex min-h-11 cursor-pointer items-center gap-3 text-xs"><input type="radio" name={`${id}-collection`} checked={(params.get("collection") || "") === item.value} onChange={() => onChange({ collection: item.value || null })} className="h-3.5 w-3.5 accent-black" />{item.label}</label>)}
+        {[{ value: "", label: "All pieces" }, { value: "new", label: "New arrivals" }, { value: "loved", label: "Most loved" }, { value: "sale", label: "Sale" }].map((item) => <label key={item.value} className="flex min-h-11 cursor-pointer items-center gap-3 text-xs"><input type="radio" name={`${id}-collection`} checked={(params.get("collection") || "") === item.value} onChange={() => onChange({ collection: item.value || null })} className="h-3.5 w-3.5 accent-black" />{item.label}</label>)}
       </fieldset>
       <form key={`${params.get("min")}-${params.get("max")}`} onSubmit={(event) => {
         event.preventDefault();

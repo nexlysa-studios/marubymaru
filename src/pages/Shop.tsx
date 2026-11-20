@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { sellingPrice } from "@/lib/pricing";
 import { Link, useSearchParams } from "react-router-dom";
 import { SlidersHorizontal, X } from "lucide-react";
 import { useProducts } from "@/hooks/useProducts";
@@ -27,11 +28,12 @@ export default function Shop() {
     (!selectedSlug || (category && product.categoryId === category.id)) &&
     (collection !== "new" || product.category === "new") &&
     (collection !== "loved" || product.isFeatured || product.isBestseller) &&
+    (collection !== "sale" || sellingPrice(product) < product.price) &&
     (!size || product.sizes.includes(size)) &&
-    (min === null || product.price >= min) && (max === null || product.price <= max),
+    (min === null || sellingPrice(product) >= min) && (max === null || sellingPrice(product) <= max),
   );
-  if (sort === "price-asc") filtered.sort((a, b) => a.price - b.price);
-  if (sort === "price-desc") filtered.sort((a, b) => b.price - a.price);
+  if (sort === "price-asc") filtered.sort((a, b) => sellingPrice(a) - sellingPrice(b));
+  if (sort === "price-desc") filtered.sort((a, b) => sellingPrice(b) - sellingPrice(a));
   if (sort === "name") filtered.sort((a, b) => a.name.localeCompare(b.name));
   const loading = products.isLoading || categories.isLoading;
   const error = products.isError || categories.isError;
@@ -44,7 +46,7 @@ export default function Shop() {
   };
   const activeFilters = [
     ...(selectedSlug ? [{ key: "category", label: category?.name || selectedSlug }] : []),
-    ...(["new", "loved"].includes(collection ?? "") ? [{ key: "collection", label: collection === "new" ? "New arrivals" : "Most loved" }] : []),
+    ...(["new", "loved", "sale"].includes(collection ?? "") ? [{ key: "collection", label: collection === "sale" ? "Sale" : collection === "new" ? "New arrivals" : "Most loved" }] : []),
     ...(size ? [{ key: "size", label: `Size ${size}` }] : []),
     ...(min !== null ? [{ key: "min", label: `From R${min}` }] : []),
     ...(max !== null ? [{ key: "max", label: `Up to R${max}` }] : []),
@@ -57,10 +59,14 @@ export default function Shop() {
       <header className="mb-8 border-b border-black/10 pb-9 md:mb-10 md:pb-12">
         <p className="mb-4 text-[9px] uppercase tracking-[0.25em] text-muted-foreground">Maru by Maru / The wardrobe</p>
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
-          <h1 className="font-serif text-5xl leading-tight md:text-6xl">{collection === "new" ? "New Arrivals" : collection === "loved" ? "Most Loved" : category?.name || "The Collection"}</h1>
+          <h1 className="font-serif text-5xl leading-tight md:text-6xl">{collection === "sale" ? "The Sale Edit" : collection === "new" ? "New Arrivals" : collection === "loved" ? "Most Loved" : category?.name || "The Collection"}</h1>
           <p className="max-w-xs text-xs leading-6 text-muted-foreground">Considered silhouettes. Effortless expression.<br />Find the pieces that feel like you.</p>
         </div>
       </header>
+      <nav aria-label="Collection shortcuts" className="mb-6 flex flex-wrap gap-3">
+        <Link to="/shop" aria-current={!collection && !selectedSlug ? "page" : undefined} className={`inline-flex min-h-11 items-center border px-4 text-[10px] uppercase tracking-[0.18em] ${!collection && !selectedSlug ? "border-black bg-black text-white" : "border-black/15 hover:border-black"}`}>All pieces</Link>
+        <Link to="/shop?collection=sale" aria-current={collection === "sale" ? "page" : undefined} className={`inline-flex min-h-11 items-center border px-4 text-[10px] uppercase tracking-[0.18em] ${collection === "sale" ? "border-black bg-black text-white" : "border-black/15 hover:border-black"}`}>Sale edit</Link>
+      </nav>
       <div className="grid items-start gap-8 lg:grid-cols-[200px_minmax(0,1fr)] lg:gap-9 xl:grid-cols-[220px_minmax(0,1fr)] xl:gap-12">
         <aside aria-label="Shop filters" className="sticky top-24 hidden max-h-[calc(100dvh-7rem)] overflow-y-auto overscroll-contain pr-5 lg:block">
           <div className="mb-6 flex items-center justify-between">

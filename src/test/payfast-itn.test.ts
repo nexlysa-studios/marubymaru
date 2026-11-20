@@ -37,6 +37,13 @@ function fixture(overrides: Partial<PaymentOrder> = {}) {
 }
 
 describe("PayFast protocol", () => {
+  it("accepts a verified late payment after a customer cancellation without undoing the cancellation flag", async () => {
+    const { handle, order } = fixture({ status: "cancelled", payment_status: "cancelled" });
+    expect((await handle(signedRequest())).status).toBe(200);
+    expect(order.payment_status).toBe("paid");
+    expect(order.status).toBe("cancelled");
+    expect(order.paid_at).toBeTruthy();
+  });
   it("reproduces and fixes the old checkout/ITN signature mismatch", async () => {
     const expected = createHash("md5").update(`${parameters}&passphrase=${passphrase}`).digest("hex");
     const pairs = [...new URLSearchParams(parameters).entries()];

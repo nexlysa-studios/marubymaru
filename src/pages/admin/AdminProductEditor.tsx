@@ -24,6 +24,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { TablesInsert } from "@/integrations/supabase/types";
 import { removeProductImages, uploadProductImages } from "@/lib/productImages";
 import { Skeleton } from "@/components/ui/skeleton";
+import ProductPrice from "@/components/ProductPrice";
 
 interface ManagedImage {
   key: string;
@@ -80,6 +81,8 @@ const AdminProductEditor = () => {
   const [productId, setProductId] = useState("");
   const [idWasEdited, setIdWasEdited] = useState(false);
   const [price, setPrice] = useState("");
+  const [onSale, setOnSale] = useState(false);
+  const [salePrice, setSalePrice] = useState("");
   const [description, setDescription] = useState("");
   const [fabric, setFabric] = useState("");
   const [care, setCare] = useState("");
@@ -113,6 +116,8 @@ const AdminProductEditor = () => {
     setName(product.name);
     setProductId(product.id);
     setPrice(String(product.price));
+    setOnSale(product.sale_price != null);
+    setSalePrice(product.sale_price == null ? "" : String(product.sale_price));
     setDescription(product.description);
     setFabric(product.fabric);
     setCare(product.care);
@@ -194,6 +199,7 @@ const AdminProductEditor = () => {
       return "The product ID must use lowercase letters, numbers, and single hyphens.";
     }
     if (!Number.isFinite(parsedPrice) || parsedPrice < 0) return "Enter a valid price.";
+    if (onSale && (!Number.isFinite(Number(salePrice)) || Number(salePrice) <= 0 || Number(salePrice) >= parsedPrice)) return "Sale price must be above zero and below the regular price.";
     if (!parsedSizes.length) return "Add at least one size.";
     if (!categories.some((item) => item.id === productCategoryId && item.is_active)) return "Choose an active product category.";
     if (!images.length) return "Add at least one product image.";
@@ -230,6 +236,7 @@ const AdminProductEditor = () => {
         id: productId,
         name: name.trim(),
         price: Number(price),
+        sale_price: onSale ? Number(salePrice) : null,
         description: description.trim(),
         fabric: fabric.trim(),
         care: care.trim(),
@@ -384,6 +391,14 @@ const AdminProductEditor = () => {
               <Field label="Description" htmlFor="description">
                 <textarea id="description" rows={5} value={description} onChange={(event) => setDescription(event.target.value)} className={`${inputClass} resize-y`} placeholder="Describe the silhouette, fit, and feeling of the piece." />
               </Field>
+              <div className="border-t border-black/10 pt-6">
+                <label className="flex min-h-11 items-center gap-3 text-xs uppercase tracking-wider"><input type="checkbox" checked={onSale} onChange={event => setOnSale(event.target.checked)} className="h-4 w-4 accent-black" />On sale</label>
+                {onSale && <div className="mt-4 space-y-4">
+                  <Field label="Sale price (ZAR)" htmlFor="sale-price"><input id="sale-price" type="number" min="0.01" step="0.01" value={salePrice} onChange={event => setSalePrice(event.target.value)} required className={inputClass} /></Field>
+                  <p className="text-sm"><ProductPrice product={{ price: Number(price), salePrice: Number(salePrice) }} /></p>
+                  <p className="text-xs leading-6 text-black/50">Sale items cannot receive a discount code. Saving an active sale starts a subscriber announcement immediately, normally within a few seconds. Sending must be enabled in Newsletter. Inbox arrival depends on the email provider.</p>
+                </div>}
+              </div>
             </div>
           </section>
 

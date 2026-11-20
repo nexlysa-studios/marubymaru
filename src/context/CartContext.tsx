@@ -1,5 +1,7 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 import { Product } from "@/data/products";
+import { useProducts } from "@/hooks/useProducts";
+import { sellingPrice } from "@/lib/pricing";
 
 interface CartItem {
   product: Product;
@@ -20,7 +22,10 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
-  const [items, setItems] = useState<CartItem[]>([]);
+  const [storedItems, setItems] = useState<CartItem[]>([]);
+  const { data: catalog } = useProducts();
+  // Keep quantities/sizes, but never retain an old catalogue price in the bag.
+  const items = storedItems.map(item => ({ ...item, product: catalog?.find(product => product.id === item.product.id) ?? item.product }));
 
   const addItem = (product: Product, size: string) => {
     setItems((prev) => {
@@ -62,7 +67,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);
   const totalPrice = items.reduce(
-    (sum, i) => sum + i.product.price * i.quantity,
+    (sum, i) => sum + Math.round(sellingPrice(i.product) * 100) * i.quantity / 100,
     0
   );
 

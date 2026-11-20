@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import ProductPrice from "@/components/ProductPrice";
 import { Link, useSearchParams } from "react-router-dom";
 import { Edit3, ImageOff, Plus, Search, Trash2 } from "lucide-react";
 import { ProductListSkeleton } from "@/components/storefront/ProductSkeletons";
@@ -216,9 +217,9 @@ const AdminDashboard = () => {
                 <p className="mt-1 truncate text-[10px] uppercase tracking-[0.14em] text-black/40">
                   {product.category_id ? categoryNames.get(product.category_id) ?? "Uncategorized" : "Uncategorized"} · {product.id}
                 </p>
-                <p className="mt-2 text-sm sm:hidden">{formatCurrency(product.price)}</p>
+                <p className="mt-2 text-sm sm:hidden"><ProductPrice product={{ price: product.price, salePrice: product.sale_price }} /></p>
               </div>
-              <p className="hidden text-sm sm:block">{formatCurrency(product.price)}</p>
+              <p className="hidden text-sm sm:block"><ProductPrice product={{ price: product.price, salePrice: product.sale_price }} /></p>
               <div className="hidden sm:block">
                 <span className={`inline-block px-3 py-1.5 text-[9px] uppercase tracking-[0.18em] ${product.is_active ? "bg-black text-white" : "border border-black/20 text-black/50"}`}>
                   {product.is_active ? "Active" : "Draft"}

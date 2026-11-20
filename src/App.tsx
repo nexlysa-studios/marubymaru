@@ -17,6 +17,7 @@ import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import NotFound from "./pages/NotFound";
 import PaymentResult from "./pages/PaymentResult";
+import PaymentRecovery from "./pages/PaymentRecovery";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminOverview from "./pages/admin/AdminOverview";
@@ -24,6 +25,8 @@ import AdminProductEditor from "./pages/admin/AdminProductEditor";
 import AdminOrders from "./pages/admin/AdminOrders";
 import AdminOrderDetail from "./pages/admin/AdminOrderDetail";
 import AdminCoupons from "./pages/admin/AdminCoupons";
+import AdminNewsletter from "./pages/admin/AdminNewsletter";
+import NewsletterUnsubscribe from "./pages/NewsletterUnsubscribe";
 import StoreInformation, { type InformationPage } from "./pages/StoreInformation";
 
 const queryClient = new QueryClient();
@@ -47,6 +50,7 @@ const App = () => (
                   <Route path="orders" element={<AdminOrders />} />
                   <Route path="orders/:id" element={<AdminOrderDetail />} />
                   <Route path="coupons" element={<AdminCoupons />} />
+                  <Route path="newsletter" element={<AdminNewsletter />} />
                 </Route>
               </Route>
 
@@ -58,8 +62,10 @@ const App = () => (
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/checkout" element={<Checkout />} />
+                <Route path="/newsletter/unsubscribe" element={<NewsletterUnsubscribe />} />
                 <Route path="/payment/success" element={<PaymentResult outcome="success" />} />
                 <Route path="/payment/cancelled" element={<PaymentResult outcome="cancelled" />} />
+                <Route path="/payment/reminder" element={<PaymentRecovery />} />
                 {(["shipping", "returns", "size-guide", "faq", "privacy", "terms"] as InformationPage[]).map((page) => (
                   <Route key={page} path={`/${page}`} element={<StoreInformation page={page} />} />
                 ))}

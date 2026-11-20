@@ -15,12 +15,13 @@ vi.mock("@/hooks/useAdminProducts", () => ({ useAdminProducts: () => ({ data: []
 vi.mock("@/hooks/useCategories", () => ({ useCategories: () => ({ data: [], isLoading: false }) }));
 vi.mock("@/context/AdminAuthContext", () => ({ useAdminAuth: () => ({ user: { email: "admin@example.invalid" } }) }));
 vi.mock("@/components/admin/OrderEmailStatus", () => ({ default: ({ paid }: { paid: boolean }) => <p>Email payment flag: {String(paid)}</p> }));
+vi.mock("@/components/admin/PaymentReminders", () => ({ default: () => null, OrderPaymentReminder: () => null }));
 vi.mock("@/integrations/supabase/client", () => ({ supabase: { from: () => ({ update: mocks.update }) } }));
 vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: mocks.toast } }));
 
 const order = (payment: string, overrides: Partial<AdminOrder> = {}): AdminOrder => ({
   id: `order-${payment}`, order_number: `MBM-${payment.toUpperCase()}`, payment_status: payment,
-  status: "new", total: 749, subtotal: 650, shipping_amount: 99, discount_amount: 0, discount_code: "",
+  status: "new", total: 749, subtotal: 650, shipping_amount: 99, discount_amount: 0, discount_code: "", cancellation_reason: "",
   customer_first_name: "Test", customer_last_name: "Customer", customer_email: `${payment}@example.invalid`, customer_phone: "0000000000",
   shipping_address_line_1: "Test road", shipping_address_line_2: "", shipping_city: "Cape Town", shipping_province: "Western Cape",
   shipping_country: "South Africa", shipping_postal_code: "8001", customer_notes: "", admin_notes: "Saved notes",

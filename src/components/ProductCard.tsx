@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import type { Product } from "@/data/products";
+import ProductPrice from "@/components/ProductPrice";
 
 const ProductCard = ({ product, compact = false }: { product: Product; compact?: boolean }) => (
   <Link to={`/product/${encodeURIComponent(product.id)}`} className="product-card group block min-w-0">
@@ -25,7 +26,7 @@ const ProductCard = ({ product, compact = false }: { product: Product; compact?:
       )}
     </div>
     <h3 className={`break-words font-serif leading-snug tracking-wide ${compact ? "text-base sm:text-lg" : "text-lg md:text-xl"}`}>{product.name}</h3>
-    <p className="mt-2 text-xs tracking-wide">R{product.price.toFixed(2)}</p>
+    <p className="mt-2 text-xs tracking-wide"><ProductPrice product={product} /></p>
   </Link>
 );
 

@@ -46,6 +46,7 @@ const pages = {
     intro: "Your information deserves thoughtful care.",
     sections: [
       ["Order information", "Checkout asks for your name, email, phone number, delivery address and any order notes. These details are saved with your order so the Maru team can manage it."],
+      ["The Maru List", "Newsletter signup is optional and activates immediately with your consent. We store your email, signup source, consent version and subscription dates in Supabase, and use Resend to deliver sale and promotion emails. Every newsletter includes an unsubscribe link. Unsubscribing does not stop essential order confirmations. Contact marubymaru@icloud.com for subscription or privacy requests."],
       ["Full policy", "Our full privacy policy and privacy contact details are being prepared. They will be published here once confirmed."],
     ],
   },

@@ -13,3 +13,30 @@ verify_jwt = false
 [functions.resend-webhook]
 # Authenticated by the Resend/Svix signature, never by a browser session.
 verify_jwt = false
+
+[functions.newsletter]
+verify_jwt = false
+
+[functions.marketing-emails]
+# Scheduler token checked inside the worker; not browser accessible.
+verify_jwt = false
+
+[functions.marketing-admin]
+# User JWT and public.is_admin() are checked inside the function.
+verify_jwt = false
+
+[functions.subscription-emails]
+# Scheduler token checked inside; confirmations do not require campaign sending.
+verify_jwt = false
+
+[functions.payment-reminders]
+# Scheduler worker token checked inside the function.
+verify_jwt = false
+
+[functions.payment-recovery]
+# Private expiring order token checked server-side; GET cannot mutate orders.
+verify_jwt = false
+
+[functions.order-expiry]
+# Private scheduler token checked inside the worker.
+verify_jwt = false

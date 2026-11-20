@@ -1,4 +1,6 @@
-import { useLayoutEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type FormEvent } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import ProductPrice from "@/components/ProductPrice";
 import { Link } from "react-router-dom";
 import { Check, Loader2 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
@@ -51,6 +53,7 @@ const inputClass =
   "w-full border-0 border-b border-black/30 bg-transparent px-0 py-3 text-sm outline-none transition-colors placeholder:text-black/25 focus:border-black";
 
 const Checkout = () => {
+  const queryClient = useQueryClient();
   const { items, totalPrice, clearCart } = useCart();
   const { data: shippingPolicy, isError: shippingError, refetch: refreshShipping } = useShippingPolicy();
   const [customer, setCustomer] = useState(initialCustomer);
@@ -62,6 +65,8 @@ const Checkout = () => {
   const [couponError, setCouponError] = useState("");
   const [isApplying, setIsApplying] = useState(false);
   const redirectHeading = useRef<HTMLHeadingElement>(null);
+  const cartFingerprint = JSON.stringify(items.map(item => [item.product.id, item.size, item.quantity, item.product.price, item.product.salePrice]));
+  useEffect(() => { setCoupon(null); setCouponError(""); }, [cartFingerprint, customer.email]);
 
   useLayoutEffect(() => {
     if (!isSubmitting) return;
@@ -133,6 +138,7 @@ const Checkout = () => {
         postal_code: customer.postalCode.trim(),
         country: customer.country.trim(),
         notes: customer.notes.trim(),
+        expected_total: Math.round((totalPrice - discount + (shipping ?? 0)) * 100) / 100,
       },
       p_items: cartItemsPayload(),
       p_coupon_code: coupon?.code ?? null,
@@ -145,6 +151,10 @@ const Checkout = () => {
         setCouponError(message);
       }
       setError(message);
+      if (/Prices have changed/i.test(message)) {
+        setCoupon(null);
+        void queryClient.invalidateQueries({ queryKey: ["products"] });
+      }
       setIsSubmitting(false);
       return;
     }
@@ -304,13 +314,14 @@ const Checkout = () => {
                   <div className="min-w-0 flex-1">
                     <p className="font-serif text-lg leading-tight">{item.product.name}</p>
                     <p className="mt-1 text-[10px] uppercase tracking-[0.15em] text-black/45">Size {item.size}</p>
-                    <p className="mt-3 text-xs">{formatCurrency(item.product.price * item.quantity)}</p>
+                    <p className="mt-3 text-xs"><ProductPrice product={item.product} quantity={item.quantity} /></p>
                   </div>
                 </div>
               ))}
             </div>
             <div className="border-b border-black/10 py-5">
               <p className="text-[10px] uppercase tracking-[0.18em]">Discount code</p>
+              <p className="mt-2 text-[10px] leading-5 text-black/45">Codes apply to full-price items only. Sale items do not count toward a code's minimum spend.</p>
               {!hasValidEmail ? (
                 <div className="mt-3 border border-black/30 p-4 text-xs leading-relaxed">
                   <p className="font-medium uppercase tracking-[0.15em]">One step first</p>

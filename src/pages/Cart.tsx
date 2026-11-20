@@ -1,6 +1,7 @@
 import { useCart } from "@/context/CartContext";
 import { Link } from "react-router-dom";
 import { Minus, Plus, X } from "lucide-react";
+import ProductPrice from "@/components/ProductPrice";
 import { useShippingPolicy } from "@/hooks/useShippingPolicy";
 import { formatCurrency, shippingAmount, shippingDescription } from "@/lib/shipping";
 
@@ -99,7 +100,7 @@ const Cart = () => {
 
             {/* Price */}
             <div className="md:col-span-2 text-right text-sm">
-              R{item.product.price * item.quantity}
+              <ProductPrice product={item.product} quantity={item.quantity} />
             </div>
           </div>
         ))}

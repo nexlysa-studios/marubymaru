@@ -10,6 +10,7 @@ const mobileNavigation = [
   { label: "Add product", to: "/admin/products/new" },
   { label: "Orders", to: "/admin/orders" },
   { label: "Discount codes", to: "/admin/coupons" },
+  { label: "Newsletter", to: "/admin/newsletter" },
 ];
 
 const navClass = ({ isActive }: { isActive: boolean }) =>
@@ -26,7 +27,8 @@ const AdminLayout = () => {
   const activePage = location.pathname === "/admin/products/new" ? "/admin/products/new" :
     location.pathname.startsWith("/admin/products") ? "/admin/products" :
     location.pathname.startsWith("/admin/orders") ? "/admin/orders" :
-    location.pathname.startsWith("/admin/coupons") ? "/admin/coupons" : "/admin";
+    location.pathname.startsWith("/admin/coupons") ? "/admin/coupons" :
+    location.pathname.startsWith("/admin/newsletter") ? "/admin/newsletter" : "/admin";
 
   useEffect(() => { setMobileOpen(false); }, [location.key]);
 
@@ -64,6 +66,9 @@ const AdminLayout = () => {
           </NavLink>
           <NavLink to="/admin/coupons" className={navClass}>
             <Ticket size={16} /> Discount codes
+          </NavLink>
+          <NavLink to="/admin/newsletter" className={navClass}>
+            <Ticket size={16} /> Newsletter
           </NavLink>
         </nav>
 

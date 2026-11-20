@@ -4,6 +4,7 @@ import { Loader2, Pencil, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 import { toast } from "@/hooks/use-toast";
+import { Link } from "react-router-dom";
 
 type Coupon = Tables<"coupons">;
 
@@ -58,6 +59,11 @@ const AdminCoupons = () => {
   const [form, setForm] = useState<FormState>(emptyForm);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formError, setFormError] = useState("");
+  const [notifySubscribers, setNotifySubscribers] = useState(false);
+  const subscriberSummary = useQuery({ queryKey: ["admin", "newsletter-summary"], queryFn: async () => {
+    const { data, error } = await supabase.rpc("newsletter_admin_summary"); if (error) throw error;
+    return data as unknown as { subscribed: number };
+  } });
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin", "coupons"],
@@ -86,6 +92,7 @@ const AdminCoupons = () => {
     setForm(emptyForm);
     setEditingId(null);
     setFormError("");
+    setNotifySubscribers(false);
   };
 
   const save = useMutation({
@@ -118,16 +125,23 @@ const AdminCoupons = () => {
         max_uses_per_customer: perCustomer,
         is_active: form.is_active,
       };
-      const { error } = editingId
-        ? await supabase.from("coupons").update(payload).eq("id", editingId)
-        : await supabase.from("coupons").insert(payload);
+      const { data: saved, error } = editingId
+        ? await supabase.from("coupons").update(payload).eq("id", editingId).select("id").single()
+        : await supabase.from("coupons").insert(payload).select("id").single();
       if (error) {
         if (error.code === "23505") throw new Error("A discount code with that name already exists.");
         throw error;
       }
+      if (notifySubscribers && saved) {
+        const { error: announceError } = await supabase.rpc("queue_coupon_announcement", { p_coupon_id: saved.id });
+        if (announceError) return { announcementError: announceError.message };
+      }
+      return { announcementError: null };
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
       toast({ title: editingId ? "Discount code updated" : "Discount code created" });
+      if (result?.announcementError) toast({ title: "Code saved, but no announcement was queued", description: result.announcementError, variant: "destructive" });
+      else if (notifySubscribers) toast({ title: "Subscriber announcement queued", description: "Review the preview and sending settings in Newsletter. Scheduled offers wait until they start." });
       resetForm();
       void queryClient.invalidateQueries({ queryKey: ["admin", "coupons"] });
     },
@@ -154,6 +168,7 @@ const AdminCoupons = () => {
   });
 
   const startEdit = (c: Coupon) => {
+    setNotifySubscribers(false);
     setEditingId(c.id);
     setFormError("");
     setForm({
@@ -174,6 +189,7 @@ const AdminCoupons = () => {
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     setFormError("");
+    if (notifySubscribers && !window.confirm(`Save this code and queue an email for up to ${subscriberSummary.data?.subscribed ?? 0} subscribers? Sale items are excluded. Scheduled codes wait until their start date. Sending must be enabled in Newsletter.`)) return;
     save.mutate();
   };
 
@@ -184,6 +200,7 @@ const AdminCoupons = () => {
       <p className="mt-3 max-w-xl text-sm text-black/55">
         Create a code to share on Instagram or TikTok. Each customer is tracked by email, so they can only use it as many times as you allow.
       </p>
+      <p className="mt-3 max-w-xl text-xs leading-6 text-black/50">All codes exclude sale items. Minimum spend counts full-price merchandise only. Share codes through ads, subscriber emails, or both.</p>
 
       <form onSubmit={onSubmit} className="mt-10 border border-black/10 bg-white p-6 sm:p-8">
         <h2 className="font-serif text-2xl">{editingId ? "Edit code" : "New code"}</h2>
@@ -223,6 +240,8 @@ const AdminCoupons = () => {
           <input type="checkbox" checked={form.is_active} onChange={(e) => set("is_active", e.target.checked)} className="h-4 w-4 accent-black" />
           Active
         </label>
+        <label className="mt-5 flex min-h-11 items-start gap-3 text-xs leading-6"><input type="checkbox" checked={notifySubscribers} onChange={e => setNotifySubscribers(e.target.checked)} className="mt-1 h-4 w-4 shrink-0 accent-black" />Email subscribers about this code (optional; off by default).</label>
+        <p className="mt-2 text-xs leading-6 text-black/45">Up to {subscriberSummary.data?.subscribed ?? 0} subscribed readers. This does not restrict code usage to subscribers. <Link to="/admin/newsletter" className="underline underline-offset-4">Preview announcements and manage sending</Link>.</p>
         {formError && <p role="alert" className="mt-5 border border-black p-3 text-xs">{formError}</p>}
         <div className="mt-6 flex gap-3">
           <button type="submit" disabled={save.isPending} className="flex items-center gap-2 bg-black px-6 py-3 text-[10px] uppercase tracking-[0.22em] text-white hover:opacity-75 disabled:opacity-40">
@@ -268,6 +287,11 @@ const AdminCoupons = () => {
                   </td>
                   <td className="p-4">
                     <div className="flex justify-end gap-3">
+                      <button type="button" disabled={couponStatus(c) === "Paused" || couponStatus(c) === "Expired"} className="min-h-11 text-[10px] underline underline-offset-4 disabled:opacity-30" onClick={async () => {
+                        if (!window.confirm(`Queue an announcement for ${c.code} to up to ${subscriberSummary.data?.subscribed ?? 0} subscribers? This version can only be announced once.`)) return;
+                        const { error } = await supabase.rpc("queue_coupon_announcement", { p_coupon_id: c.id });
+                        toast({ title: error ? "Announcement not queued" : "Announcement queued", description: error?.message ?? "Preview it in Newsletter. Sending must be enabled.", variant: error ? "destructive" : "default" });
+                      }}>Email subscribers</button>
                       <button type="button" onClick={() => startEdit(c)} aria-label={`Edit ${c.code}`} className="hover:opacity-50"><Pencil size={15} /></button>
                       <button type="button" aria-label={`Delete ${c.code}`} className="hover:opacity-50"
                         onClick={() => { if (window.confirm(`Delete ${c.code}? Its usage history will also be removed.`)) remove.mutate(c.id); }}>

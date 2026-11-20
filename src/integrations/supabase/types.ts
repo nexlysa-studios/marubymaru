@@ -10,51 +10,10 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: "14.17"
   }
   public: {
     Tables: {
-      shipping_settings: {
-        Row: { id: boolean; flat_rate: number; free_shipping_threshold: number }
-        Insert: { id?: boolean; flat_rate: number; free_shipping_threshold: number }
-        Update: { flat_rate?: number; free_shipping_threshold?: number }
-        Relationships: []
-      }
-      order_emails: {
-        Row: {
-          id: string
-          order_id: string
-          kind: string
-          status: string
-          recipient: string | null
-          provider_id: string | null
-          attempts: number
-          last_error: string | null
-          sent_at: string | null
-          delivery_status: string | null
-          delivery_updated_at: string | null
-          created_at: string
-          next_attempt_at: string
-          first_attempt_at: string | null
-          locked_until: string | null
-          lock_token: string | null
-          snapshot: Json
-          payload: Json | null
-        }
-        Insert: {
-          order_id: string
-          kind: string
-          snapshot: Json
-        }
-        Update: { status?: string }
-        Relationships: [{
-          foreignKeyName: "order_emails_order_id_fkey"
-          columns: ["order_id"]
-          isOneToOne: false
-          referencedRelation: "orders"
-          referencedColumns: ["id"]
-        }]
-      }
       categories: {
         Row: {
           created_at: string
@@ -181,6 +140,386 @@ export type Database = {
         }
         Relationships: []
       }
+      marketing_campaigns: {
+        Row: {
+          completed_at: string | null
+          coupon_id: string | null
+          created_at: string
+          due_at: string
+          id: string
+          kind: string
+          last_error: string | null
+          snapshot: Json | null
+          source_key: string | null
+          status: string
+          title: string
+        }
+        Insert: {
+          completed_at?: string | null
+          coupon_id?: string | null
+          created_at?: string
+          due_at?: string
+          id?: string
+          kind: string
+          last_error?: string | null
+          snapshot?: Json | null
+          source_key?: string | null
+          status?: string
+          title: string
+        }
+        Update: {
+          completed_at?: string | null
+          coupon_id?: string | null
+          created_at?: string
+          due_at?: string
+          id?: string
+          kind?: string
+          last_error?: string | null
+          snapshot?: Json | null
+          source_key?: string | null
+          status?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketing_campaigns_coupon_id_fkey"
+            columns: ["coupon_id"]
+            isOneToOne: false
+            referencedRelation: "coupons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketing_deliveries: {
+        Row: {
+          attempts: number
+          campaign_id: string
+          delivery_status: string | null
+          delivery_updated_at: string | null
+          first_attempt_at: string | null
+          id: string
+          last_error: string | null
+          lock_token: string | null
+          locked_until: string | null
+          next_attempt_at: string
+          payload: Json | null
+          provider_id: string | null
+          sent_at: string | null
+          status: string
+          subscriber_id: string
+        }
+        Insert: {
+          attempts?: number
+          campaign_id: string
+          delivery_status?: string | null
+          delivery_updated_at?: string | null
+          first_attempt_at?: string | null
+          id?: string
+          last_error?: string | null
+          lock_token?: string | null
+          locked_until?: string | null
+          next_attempt_at?: string
+          payload?: Json | null
+          provider_id?: string | null
+          sent_at?: string | null
+          status?: string
+          subscriber_id: string
+        }
+        Update: {
+          attempts?: number
+          campaign_id?: string
+          delivery_status?: string | null
+          delivery_updated_at?: string | null
+          first_attempt_at?: string | null
+          id?: string
+          last_error?: string | null
+          lock_token?: string | null
+          locked_until?: string | null
+          next_attempt_at?: string
+          payload?: Json | null
+          provider_id?: string | null
+          sent_at?: string | null
+          status?: string
+          subscriber_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketing_deliveries_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "marketing_campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketing_deliveries_subscriber_id_fkey"
+            columns: ["subscriber_id"]
+            isOneToOne: false
+            referencedRelation: "newsletter_subscribers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketing_sale_items: {
+        Row: {
+          campaign_id: string
+          product_id: string
+          revision: number
+        }
+        Insert: {
+          campaign_id: string
+          product_id: string
+          revision: number
+        }
+        Update: {
+          campaign_id?: string
+          product_id?: string
+          revision?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketing_sale_items_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "marketing_campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      newsletter_rate_limits: {
+        Row: {
+          attempts: number
+          key: string
+          window_start: string
+        }
+        Insert: {
+          attempts?: number
+          key: string
+          window_start?: string
+        }
+        Update: {
+          attempts?: number
+          key?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
+      newsletter_settings: {
+        Row: {
+          id: boolean
+          mailing_address: string
+          sending_enabled: boolean
+          worker_locked_until: string | null
+          worker_token: string | null
+        }
+        Insert: {
+          id?: boolean
+          mailing_address?: string
+          sending_enabled?: boolean
+          worker_locked_until?: string | null
+          worker_token?: string | null
+        }
+        Update: {
+          id?: boolean
+          mailing_address?: string
+          sending_enabled?: boolean
+          worker_locked_until?: string | null
+          worker_token?: string | null
+        }
+        Relationships: []
+      }
+      newsletter_subscribers: {
+        Row: {
+          consent_version: string
+          created_at: string
+          email: string
+          id: string
+          source: string
+          status: string
+          subscribed_at: string
+          unsubscribe_token: string
+          unsubscribed_at: string | null
+        }
+        Insert: {
+          consent_version?: string
+          created_at?: string
+          email: string
+          id?: string
+          source?: string
+          status?: string
+          subscribed_at?: string
+          unsubscribe_token?: string
+          unsubscribed_at?: string | null
+        }
+        Update: {
+          consent_version?: string
+          created_at?: string
+          email?: string
+          id?: string
+          source?: string
+          status?: string
+          subscribed_at?: string
+          unsubscribe_token?: string
+          unsubscribed_at?: string | null
+        }
+        Relationships: []
+      }
+      order_cancellation_emails: {
+        Row: {
+          attempts: number
+          created_at: string
+          first_attempt_at: string | null
+          id: string
+          last_error: string | null
+          lock_token: string | null
+          locked_until: string | null
+          next_attempt_at: string
+          order_id: string
+          payload: Json | null
+          provider_id: string | null
+          recipient: string | null
+          sent_at: string | null
+          snapshot: Json
+          status: string
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          first_attempt_at?: string | null
+          id?: string
+          last_error?: string | null
+          lock_token?: string | null
+          locked_until?: string | null
+          next_attempt_at?: string
+          order_id: string
+          payload?: Json | null
+          provider_id?: string | null
+          recipient?: string | null
+          sent_at?: string | null
+          snapshot: Json
+          status?: string
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          first_attempt_at?: string | null
+          id?: string
+          last_error?: string | null
+          lock_token?: string | null
+          locked_until?: string | null
+          next_attempt_at?: string
+          order_id?: string
+          payload?: Json | null
+          provider_id?: string | null
+          recipient?: string | null
+          sent_at?: string | null
+          snapshot?: Json
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_cancellation_emails_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: true
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_email_events: {
+        Row: {
+          event_id: string
+          occurred_at: string
+          provider_id: string
+          received_at: string
+          status: string
+        }
+        Insert: {
+          event_id: string
+          occurred_at: string
+          provider_id: string
+          received_at?: string
+          status: string
+        }
+        Update: {
+          event_id?: string
+          occurred_at?: string
+          provider_id?: string
+          received_at?: string
+          status?: string
+        }
+        Relationships: []
+      }
+      order_emails: {
+        Row: {
+          attempts: number
+          created_at: string
+          delivery_status: string | null
+          delivery_updated_at: string | null
+          first_attempt_at: string | null
+          id: string
+          kind: string
+          last_error: string | null
+          lock_token: string | null
+          locked_until: string | null
+          next_attempt_at: string
+          order_id: string
+          payload: Json | null
+          provider_id: string | null
+          recipient: string | null
+          sent_at: string | null
+          snapshot: Json
+          status: string
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          delivery_status?: string | null
+          delivery_updated_at?: string | null
+          first_attempt_at?: string | null
+          id?: string
+          kind: string
+          last_error?: string | null
+          lock_token?: string | null
+          locked_until?: string | null
+          next_attempt_at?: string
+          order_id: string
+          payload?: Json | null
+          provider_id?: string | null
+          recipient?: string | null
+          sent_at?: string | null
+          snapshot: Json
+          status?: string
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          delivery_status?: string | null
+          delivery_updated_at?: string | null
+          first_attempt_at?: string | null
+          id?: string
+          kind?: string
+          last_error?: string | null
+          lock_token?: string | null
+          locked_until?: string | null
+          next_attempt_at?: string
+          order_id?: string
+          payload?: Json | null
+          provider_id?: string | null
+          recipient?: string | null
+          sent_at?: string | null
+          snapshot?: Json
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_emails_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_items: {
         Row: {
           created_at: string
@@ -191,8 +530,10 @@ export type Database = {
           product_image_path: string
           product_name: string
           quantity: number
+          regular_unit_price: number | null
           size: string
           unit_price: number
+          was_on_sale: boolean
         }
         Insert: {
           created_at?: string
@@ -203,8 +544,10 @@ export type Database = {
           product_image_path?: string
           product_name: string
           quantity: number
+          regular_unit_price?: number | null
           size: string
           unit_price: number
+          was_on_sale?: boolean
         }
         Update: {
           created_at?: string
@@ -215,8 +558,10 @@ export type Database = {
           product_image_path?: string
           product_name?: string
           quantity?: number
+          regular_unit_price?: number | null
           size?: string
           unit_price?: number
+          was_on_sale?: boolean
         }
         Relationships: [
           {
@@ -238,6 +583,7 @@ export type Database = {
       orders: {
         Row: {
           admin_notes: string
+          cancellation_reason: string
           created_at: string
           customer_email: string
           customer_first_name: string
@@ -265,6 +611,7 @@ export type Database = {
         }
         Insert: {
           admin_notes?: string
+          cancellation_reason?: string
           created_at?: string
           customer_email: string
           customer_first_name: string
@@ -292,6 +639,7 @@ export type Database = {
         }
         Update: {
           admin_notes?: string
+          cancellation_reason?: string
           created_at?: string
           customer_email?: string
           customer_first_name?: string
@@ -319,6 +667,104 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_reminder_settings: {
+        Row: {
+          enabled: boolean
+          enabled_from: string
+          id: boolean
+          worker_locked_until: string | null
+          worker_token: string | null
+        }
+        Insert: {
+          enabled?: boolean
+          enabled_from?: string
+          id?: boolean
+          worker_locked_until?: string | null
+          worker_token?: string | null
+        }
+        Update: {
+          enabled?: boolean
+          enabled_from?: string
+          id?: boolean
+          worker_locked_until?: string | null
+          worker_token?: string | null
+        }
+        Relationships: []
+      }
+      payment_reminders: {
+        Row: {
+          attempts: number
+          created_at: string
+          delivery_status: string | null
+          delivery_updated_at: string | null
+          expires_at: string
+          first_attempt_at: string | null
+          id: string
+          last_error: string | null
+          lock_token: string | null
+          locked_until: string | null
+          next_attempt_at: string
+          order_id: string
+          payload: Json | null
+          provider_id: string | null
+          recipient: string | null
+          sent_at: string | null
+          snapshot: Json
+          status: string
+          token: string
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          delivery_status?: string | null
+          delivery_updated_at?: string | null
+          expires_at?: string
+          first_attempt_at?: string | null
+          id?: string
+          last_error?: string | null
+          lock_token?: string | null
+          locked_until?: string | null
+          next_attempt_at?: string
+          order_id: string
+          payload?: Json | null
+          provider_id?: string | null
+          recipient?: string | null
+          sent_at?: string | null
+          snapshot: Json
+          status?: string
+          token?: string
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          delivery_status?: string | null
+          delivery_updated_at?: string | null
+          expires_at?: string
+          first_attempt_at?: string | null
+          id?: string
+          last_error?: string | null
+          lock_token?: string | null
+          locked_until?: string | null
+          next_attempt_at?: string
+          order_id?: string
+          payload?: Json | null
+          provider_id?: string | null
+          recipient?: string | null
+          sent_at?: string | null
+          snapshot?: Json
+          status?: string
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_reminders_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: true
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           care: string
@@ -334,6 +780,8 @@ export type Database = {
           is_featured: boolean
           name: string
           price: number
+          sale_price: number | null
+          sale_revision: number
           sizes: string[]
           sort_order: number
           updated_at: string
@@ -352,6 +800,8 @@ export type Database = {
           is_featured?: boolean
           name: string
           price: number
+          sale_price?: number | null
+          sale_revision?: number
           sizes?: string[]
           sort_order?: number
           updated_at?: string
@@ -370,6 +820,8 @@ export type Database = {
           is_featured?: boolean
           name?: string
           price?: number
+          sale_price?: number | null
+          sale_revision?: number
           sizes?: string[]
           sort_order?: number
           updated_at?: string
@@ -383,6 +835,113 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      shipping_settings: {
+        Row: {
+          flat_rate: number
+          free_shipping_threshold: number
+          id: boolean
+        }
+        Insert: {
+          flat_rate: number
+          free_shipping_threshold: number
+          id?: boolean
+        }
+        Update: {
+          flat_rate?: number
+          free_shipping_threshold?: number
+          id?: boolean
+        }
+        Relationships: []
+      }
+      subscription_notifications: {
+        Row: {
+          attempts: number
+          created_at: string
+          delivery_status: string | null
+          delivery_updated_at: string | null
+          first_attempt_at: string | null
+          id: string
+          kind: string
+          last_error: string | null
+          lock_token: string | null
+          locked_until: string | null
+          next_attempt_at: string
+          payload: Json | null
+          provider_id: string | null
+          recipient: string | null
+          sent_at: string | null
+          snapshot: Json
+          status: string
+          subscriber_id: string
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          delivery_status?: string | null
+          delivery_updated_at?: string | null
+          first_attempt_at?: string | null
+          id?: string
+          kind: string
+          last_error?: string | null
+          lock_token?: string | null
+          locked_until?: string | null
+          next_attempt_at?: string
+          payload?: Json | null
+          provider_id?: string | null
+          recipient?: string | null
+          sent_at?: string | null
+          snapshot: Json
+          status?: string
+          subscriber_id: string
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          delivery_status?: string | null
+          delivery_updated_at?: string | null
+          first_attempt_at?: string | null
+          id?: string
+          kind?: string
+          last_error?: string | null
+          lock_token?: string | null
+          locked_until?: string | null
+          next_attempt_at?: string
+          payload?: Json | null
+          provider_id?: string | null
+          recipient?: string | null
+          sent_at?: string | null
+          snapshot?: Json
+          status?: string
+          subscriber_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscription_notifications_subscriber_id_fkey"
+            columns: ["subscriber_id"]
+            isOneToOne: false
+            referencedRelation: "newsletter_subscribers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subscription_worker_lock: {
+        Row: {
+          id: boolean
+          locked_until: string | null
+          token: string | null
+        }
+        Insert: {
+          id?: boolean
+          locked_until?: string | null
+          token?: string | null
+        }
+        Update: {
+          id?: boolean
+          locked_until?: string | null
+          token?: string | null
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {
@@ -420,10 +979,130 @@ export type Database = {
           discount: number
         }[]
       }
+      acquire_marketing_worker: { Args: never; Returns: string }
+      acquire_reminder_worker: { Args: never; Returns: string }
+      acquire_subscription_worker: { Args: never; Returns: string }
+      cancel_marketing_campaign: { Args: { p_id: string }; Returns: undefined }
+      cancellation_email_allowed: {
+        Args: { p_id: string; p_token: string }
+        Returns: boolean
+      }
+      claim_cancellation_email: { Args: never; Returns: Json }
+      claim_marketing_delivery: { Args: never; Returns: Json }
+      claim_order_email: {
+        Args: never
+        Returns: {
+          attempts: number
+          created_at: string
+          delivery_status: string | null
+          delivery_updated_at: string | null
+          first_attempt_at: string | null
+          id: string
+          kind: string
+          last_error: string | null
+          lock_token: string | null
+          locked_until: string | null
+          next_attempt_at: string
+          order_id: string
+          payload: Json | null
+          provider_id: string | null
+          recipient: string | null
+          sent_at: string | null
+          snapshot: Json
+          status: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "order_emails"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      claim_payment_reminder: { Args: never; Returns: Json }
+      claim_subscription_notification: { Args: never; Returns: Json }
+      configure_payment_reminders: {
+        Args: { p_enabled: boolean }
+        Returns: undefined
+      }
+      dispatch_marketing_emails: { Args: never; Returns: undefined }
+      dispatch_order_emails: { Args: never; Returns: undefined }
+      dispatch_order_expiry: { Args: never; Returns: undefined }
+      dispatch_payment_reminders: { Args: never; Returns: undefined }
+      dispatch_subscription_notifications: { Args: never; Returns: undefined }
+      expand_marketing_campaigns: { Args: never; Returns: undefined }
+      expire_unpaid_orders: { Args: { p_order_id?: string }; Returns: number }
+      finish_marketing_campaigns: { Args: never; Returns: undefined }
+      finish_marketing_delivery: {
+        Args: { p_id: string; p_provider_id: string; p_token: string }
+        Returns: undefined
+      }
+      finish_order_email: {
+        Args: { p_id: string; p_lock_token: string; p_provider_id: string }
+        Returns: boolean
+      }
+      finish_payment_reminder: {
+        Args: { p_id: string; p_provider_id: string; p_token: string }
+        Returns: undefined
+      }
+      finish_subscription_notification: {
+        Args: { p_id: string; p_provider_id: string; p_token: string }
+        Returns: undefined
+      }
       is_admin: { Args: never; Returns: boolean }
+      marketing_content: { Args: { p_id: string }; Returns: Json }
+      marketing_coupon_content: { Args: { p_id: string }; Returns: Json }
+      marketing_delivery_allowed: {
+        Args: { p_id: string; p_token: string }
+        Returns: boolean
+      }
+      newsletter_admin_summary: { Args: never; Returns: Json }
+      newsletter_join: {
+        Args: { p_email: string; p_ip_hash: string }
+        Returns: string
+      }
+      newsletter_unsubscribe: { Args: { p_token: string }; Returns: undefined }
+      order_payment_recovery: {
+        Args: { p_action: string; p_token: string }
+        Returns: Json
+      }
+      payment_reminder_allowed: {
+        Args: { p_id: string; p_token: string }
+        Returns: boolean
+      }
       place_order: {
         Args: { p_coupon_code?: string; p_customer: Json; p_items: Json }
         Returns: Json
+      }
+      queue_coupon_announcement: {
+        Args: { p_coupon_id: string }
+        Returns: string
+      }
+      queue_payment_reminders: { Args: never; Returns: undefined }
+      record_order_email_event: {
+        Args: {
+          p_event_id: string
+          p_occurred_at: string
+          p_provider_id: string
+          p_status: string
+        }
+        Returns: undefined
+      }
+      release_marketing_worker: {
+        Args: { p_token: string }
+        Returns: undefined
+      }
+      release_reminder_worker: { Args: { p_token: string }; Returns: undefined }
+      release_subscription_worker: {
+        Args: { p_token: string }
+        Returns: undefined
+      }
+      subscription_notification_allowed: {
+        Args: { p_id: string; p_token: string }
+        Returns: boolean
+      }
+      sync_order_email_delivery: {
+        Args: { p_provider_id: string }
+        Returns: undefined
       }
       validate_coupon: {
         Args: { p_code: string; p_email: string; p_items: Json }

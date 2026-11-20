@@ -7,6 +7,7 @@ import { adminOrdersQueryKey, useAdminOrder } from "@/hooks/useAdminOrders";
 import { supabase } from "@/integrations/supabase/client";
 import OrderEmailStatus from "@/components/admin/OrderEmailStatus";
 import PaymentStatusBadge from "@/components/admin/PaymentStatusBadge";
+import { OrderPaymentReminder } from "@/components/admin/PaymentReminders";
 import { paymentStatus, paymentStatusDetails } from "@/lib/adminPayments";
 
 const orderStatuses = ["new", "confirmed", "processing", "shipped", "completed", "cancelled"] as const;
@@ -167,6 +168,9 @@ const AdminOrderDetail = () => {
               <div><dt className="text-black/45">Payment received</dt><dd className="mt-1 leading-6">{order.payment_status === "paid" ? order.paid_at ? formatDate(order.paid_at) : "Date not recorded" : "Not confirmed"}</dd></div>
             </dl>
             <p className="mt-5 border-t border-black/10 pt-4 text-[10px] leading-5 text-black/45">Read-only: only a verified PayFast notification can confirm payment. Updates every 30 seconds while this page is open.{dataUpdatedAt ? ` Last checked ${formatDate(new Date(dataUpdatedAt).toISOString())}.` : ""}</p>
+            {order.payment_status === "paid" && order.status === "cancelled" && <p className="mt-4 border border-black/20 p-3 text-xs leading-6">Payment was received for an order marked cancelled. Review PayFast and contact the customer before fulfilment or any refund.</p>}
+            {order.cancellation_reason === "payment_window_expired" && <p className="mt-4 text-xs leading-6 text-black/55">Automatically cancelled because payment was not confirmed before the reminder's 48-hour deadline.</p>}
+            <OrderPaymentReminder orderId={order.id} />
           </section>
           <OrderEmailStatus orderId={order.id} paid={order.payment_status === "paid"} />
           <section className="border border-black/10 bg-white p-6">

@@ -2,6 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { useProducts } from "@/hooks/useProducts";
 import { useCart } from "@/context/CartContext";
 import { useState } from "react";
+import ProductPrice from "@/components/ProductPrice";
 import { ChevronDown } from "lucide-react";
 import { ProductDetailSkeleton } from "@/components/storefront/ProductSkeletons";
 import { useShippingPolicy } from "@/hooks/useShippingPolicy";
@@ -60,7 +61,7 @@ const ProductDetail = () => {
           <h1 className="font-serif text-3xl md:text-4xl tracking-wide mb-3">
             {product.name}
           </h1>
-          <p className="text-sm tracking-wide mb-8">R{product.price}</p>
+          <p className="text-sm tracking-wide mb-8"><ProductPrice product={product} /></p>
           <p className="text-sm leading-relaxed mb-8 max-w-md">
             {product.description}
           </p>

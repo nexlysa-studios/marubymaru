@@ -15,6 +15,7 @@ async function fetchProducts(): Promise<Product[]> {
     id: row.id,
     name: row.name,
     price: Number(row.price),
+    salePrice: row.sale_price == null ? null : Number(row.sale_price),
     description: row.description,
     fabric: row.fabric,
     care: row.care,
@@ -34,4 +35,4 @@ async function fetchProducts(): Promise<Product[]> {
 }
 
 export const useProducts = () =>
-  useQuery({ queryKey: ["products"], queryFn: fetchProducts, staleTime: 1000 * 60 * 30 });
+  useQuery({ queryKey: ["products"], queryFn: fetchProducts, staleTime: 30_000, refetchInterval: 60_000 });
